@@ -5,14 +5,14 @@ using Ninject;
 
 namespace FractalPainting.App.Actions
 {
-	public class DragonFractalAction : IUiAction, INeed<IImageHolder>
+	public class DragonFractalAction : IUiAction
 	{
 		private IImageHolder imageHolder;
-
-		public void SetDependency(IImageHolder dependency)
-		{
-			imageHolder = dependency;
-		}
+        
+	    public DragonFractalAction(IImageHolder imageHolder)
+	    {
+	        this.imageHolder = imageHolder;
+	    }
 
 		public string Category => "Фракталы";
 		public string Name => "Дракон";
