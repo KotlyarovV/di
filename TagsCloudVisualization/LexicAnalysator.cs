@@ -69,11 +69,9 @@ namespace TagsCloudVisualization
         public Dictionary<string, double> GetWeights(Dictionary<string, int> frequencies)
         {
             var weights = new Dictionary<string, double>();
-            int numberOfWords = frequencies.Count;
-            foreach (var keyValuePair in frequencies)
-            {
-                weights.Add(keyValuePair.Key, keyValuePair.Value / (double)numberOfWords);
-            }
+            var numberOfWords = frequencies.Count;
+            frequencies.ForEach((pair) => weights.Add(pair.Key, pair.Value / (double)numberOfWords));
+            
             return weights;
         }
     }

@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace TagsCloudVisualization
@@ -17,11 +15,11 @@ namespace TagsCloudVisualization
             double minFont)
         {
             var result = new List<Tuple<string, float>>();
-            double maxWeight = weights.Values.Max();
-            double minWeight = weights.Values.Min();
+            var maxWeight = weights.Values.Max();
+            var minWeight = weights.Values.Min();
             foreach (var weight in weights)
             {
-                double fontSize = (weight.Value > minWeight)
+                var fontSize = (weight.Value > minWeight)
                     ? maxFont * (weight.Value - minWeight) / (maxWeight - minWeight) + minFont
                     : minFont;
                 result.Add(Tuple.Create(weight.Key, (float) fontSize));
@@ -46,13 +44,13 @@ namespace TagsCloudVisualization
             var result = new List<TextImage>();
             var proposedSize = new Size(int.MaxValue, int.MaxValue);
             var flags = TextFormatFlags.NoPadding;
-            
-            for (int i = 0; i < fontSizes.Count; i++)
+
+            foreach (var fontSize in fontSizes)
             {
-                Font font = new Font(fontTipe, fontSizes[i].Item2, FontStyle.Regular);
-                Size size = TextRenderer.MeasureText(fontSizes[i].Item1,
+                var font = new Font(fontTipe, fontSize.Item2, FontStyle.Regular);
+                var size = TextRenderer.MeasureText(fontSize.Item1,
                     font, proposedSize, flags);
-                var textImage = new TextImage(size, fontSizes[i].Item1, Color.Black, font);
+                var textImage = new TextImage(size, fontSize.Item1, Color.Black, font);
                 result.Add(textImage);
             }
 

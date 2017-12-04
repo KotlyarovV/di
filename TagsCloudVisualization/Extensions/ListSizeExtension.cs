@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Drawing;
 
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Extensions
 {
     static class ListSizeExtension
     {
-        private static readonly Random random = new Random();
+        private static readonly Random Random = new Random();
 
         public static void AddRandomSize(this List<Size> sizeList, int minValue, int maxValue)
         {
-            var x = random.Next(minValue, maxValue);
-            var y = random.Next(minValue, maxValue);
+            var x = Random.Next(minValue, maxValue);
+            var y = Random.Next(minValue, maxValue);
             sizeList.Add(new Size(x, y));
         }
 

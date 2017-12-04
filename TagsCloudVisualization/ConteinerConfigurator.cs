@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using Autofac;
+using TagsCloudVisualization.Extensions;
 using YandexMystem.Wrapper;
 
 namespace TagsCloudVisualization

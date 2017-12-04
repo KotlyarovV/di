@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 using System.Windows.Forms;
 using Autofac;
 
@@ -7,7 +6,7 @@ namespace TagsCloudVisualization
 {
     public partial class ParametersForm : Form
     {
-        Parameters parameters;
+        readonly Parameters parameters;
         public ParametersForm()
         {
             InitializeComponent();
@@ -39,7 +38,7 @@ namespace TagsCloudVisualization
         {
             parameters.Width = int.Parse(height.Text);
             parameters.Height = int.Parse(width.Text);
-            parameters.FileName = this.fileinput.Text;
+            parameters.FileName = fileinput.Text;
             parameters.FontSizeMax = double.Parse(maxfontsize.Text);
             parameters.FontSizeMin = double.Parse(minfontsize.Text);
         }
@@ -51,7 +50,7 @@ namespace TagsCloudVisualization
                 GetParameters();
                 var container = ConteinerConfigurator.ConfigureContainer(parameters);
                 var cloudPainter = container.Resolve<CloudPainter>();
-                Bitmap bitmap = cloudPainter.GetBitmap(parameters);
+                var bitmap = cloudPainter.GetBitmap(parameters);
                 Hide();
                 var form1 = new Form1(bitmap);
                 form1.Closed += (s, args) => Close();
@@ -67,7 +66,7 @@ namespace TagsCloudVisualization
                 GetParameters();
                 var container = ConteinerConfigurator.ConfigureContainer(parameters);
                 var cloudPainter = container.Resolve<CloudPainter>();
-                Bitmap bitmap = cloudPainter.GetBitmap(parameters);
+                var bitmap = cloudPainter.GetBitmap(parameters);
                 cloudPainter.SaveBitmap(bitmap);
 
             }

@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualization
 {
     class Visualisator
     {
-        private CircularCloudLayouter circularCloud;
-        private SolidBrush brush = new SolidBrush(Color.LimeGreen);
+        private readonly CircularCloudLayouter circularCloud;
+        private readonly SolidBrush brush = new SolidBrush(Color.LimeGreen);
 
         public Visualisator(CircularCloudLayouter circularCloudLayouter)
         {

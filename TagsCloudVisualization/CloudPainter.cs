@@ -28,7 +28,7 @@ namespace TagsCloudVisualization
             this.saver = saver;
         }
 
-        public List<TextImage> GetStringImagesSorted(
+        private List<TextImage> GetStringImagesSorted(
             string text, 
             double minFont = 1.0, 
             double maxFont = 10.0, 
@@ -47,10 +47,10 @@ namespace TagsCloudVisualization
             return stringImages;
         }
         
-        public void SetWordsOnGraphic(List<TextImage> textImages, Graphics graphics)
+        private void SetWordsOnGraphic(List<TextImage> textImages, Graphics graphics)
         {
             var flags = TextFormatFlags.NoPadding | TextFormatFlags.NoClipping;
-            foreach (TextImage t in textImages)
+            foreach (var t in textImages)
             {
                 var rectangle = cloudLayouter.PutNextRectangle(t.Size);
                 TextRenderer.DrawText(graphics, t.Text, t.Font,
@@ -60,7 +60,7 @@ namespace TagsCloudVisualization
 
         public Bitmap GetBitmap(Parameters parameters)
         {
-            string text = inputer.GetText();
+            var text = inputer.GetText();
             var bitmap = new Bitmap(parameters.Width, parameters.Height);
             var graphics = Graphics.FromImage(bitmap);
             List<TextImage> textImages;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualization
 {
@@ -13,7 +14,7 @@ namespace TagsCloudVisualization
         public Point Center { get; }
         private readonly double angleStep;
         
-        public double SpiralAngle { get; private set; } = 0;
+        public double SpiralAngle { get; private set; }
 
         public ArchimedeanSpiral(Point center, double angleStep = 0.01, double spiralRadius = 1)
         {

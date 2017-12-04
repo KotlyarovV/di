@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 using System.Windows.Forms;
 using Autofac;
 using Fclp;
@@ -72,7 +71,7 @@ namespace TagsCloudVisualization
                 var arguments = parser.Object;
                 var container = ConteinerConfigurator.ConfigureContainer(arguments);
                 var cloudPainter = container.Resolve<CloudPainter>();
-                Bitmap bitmap = cloudPainter.GetBitmap(arguments);
+                var bitmap = cloudPainter.GetBitmap(arguments);
                 cloudPainter.SaveBitmap(bitmap);
                 
             }
