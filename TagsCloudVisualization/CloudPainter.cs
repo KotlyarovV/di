@@ -10,22 +10,25 @@ namespace TagsCloudVisualization
         private readonly ICloudLayouter cloudLayouter;
         private readonly IAnalysator lexicAnalysator;
         private readonly ITextVisualisator textVisualisator;
-        private readonly IInputer inputer;
-        private readonly ISaver saver;
+        private readonly ISplitter splitter;
+        private readonly IFormatter formatter;
+        private readonly IFilter filter;
 
         public CloudPainter(
+            ISplitter splitter,
+            IFormatter formatter,
+            IFilter filter,
             IAnalysator lexicAnalysator,
             ICloudLayouter cloudLayouter,
-            ITextVisualisator textVisualisator,
-            IInputer inputer,
-            ISaver saver
-        )
+            ITextVisualisator textVisualisator
+            )
         {
             this.cloudLayouter = cloudLayouter;
             this.lexicAnalysator = lexicAnalysator;
             this.textVisualisator = textVisualisator;
-            this.inputer = inputer;
-            this.saver = saver;
+            this.splitter = splitter;
+            this.formatter = formatter;
+            this.filter = filter;
         }
 
         private List<TextImage> GetStringImagesSorted(
@@ -35,13 +38,17 @@ namespace TagsCloudVisualization
             string fontName = "Arial"
             )
         {
-            var filtredWords = lexicAnalysator.PrepareWords(text);
-            var frequencies = lexicAnalysator.GetFrequencies(filtredWords);
-            var weights = lexicAnalysator.GetWeights(frequencies);
+            var words = splitter.Split(text);
+            var filteredWords = filter.FilterWords(words);
+            var formattedWords = formatter.FormatWords(filteredWords).ToList().AsReadOnly();
+            var weights = lexicAnalysator.GetWeights(formattedWords);
 
-            var stringsWithFontsSizes = textVisualisator.GetFontSizes(weights, maxFont, minFont);
-            var stringImages = textVisualisator.GetStringImages(stringsWithFontsSizes, fontName);
-            stringImages = textVisualisator.SetColors(stringImages);
+            textVisualisator.CreateTextImages(weights);
+            textVisualisator.SetFontSizes(maxFont, minFont);
+            textVisualisator.SetColors();
+            textVisualisator.SetFontTipe(fontName);
+
+            var stringImages = textVisualisator.GetStringImages();
 
             stringImages = stringImages.OrderBy(stringImage => (-stringImage.Size.Width * stringImage.Size.Height)).ToList();
             return stringImages;
@@ -58,25 +65,20 @@ namespace TagsCloudVisualization
             }
         }
 
-        public Bitmap GetBitmap(Parameters parameters)
+        public Bitmap GetBitmap(
+            string text, 
+            int width = 100,
+            int height = 100,
+            double minFont = 1.0,
+            double maxFont = 10.0,
+            string fontName = "Arial"
+            )
         {
-            var text = inputer.GetText();
-            var bitmap = new Bitmap(parameters.Width, parameters.Height);
+            var bitmap = new Bitmap(width, height);
             var graphics = Graphics.FromImage(bitmap);
-            List<TextImage> textImages;
-            if (parameters.FontName == null)
-            {
-                textImages = GetStringImagesSorted(text, parameters.FontSizeMin, parameters.FontSizeMax);
-            }
-            else
-            {
-                textImages = GetStringImagesSorted(text, parameters.FontSizeMin, parameters.FontSizeMax,
-                    parameters.FontName);
-            }
+            var textImages = GetStringImagesSorted(text, minFont, maxFont, fontName);
             SetWordsOnGraphic(textImages, graphics);
             return bitmap;
-        }
-
-        public void SaveBitmap(Bitmap bitmap) => saver.SaveBitmap(bitmap);
+        }        
     }
 }

@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace TagsCloudVisualization.Extensions
 {
-    static class PointExtension
+    public static class PointExtension
     {
         public static double GetDistance(this Point point1, Point point2)
         {

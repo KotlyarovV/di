@@ -2,6 +2,7 @@
 using Autofac;
 using TagsCloudVisualization.Extensions;
 using YandexMystem.Wrapper;
+using YandexMystem.Wrapper.Enums;
 
 namespace TagsCloudVisualization
 {
@@ -9,27 +10,56 @@ namespace TagsCloudVisualization
     {
         public static IContainer ConfigureContainer(Parameters parameters)
         {
-            var builder = new ContainerBuilder();
+            
+            var chars = new [] {'!', ',', '"', '\r', '\n'};
+           
 
-            builder.RegisterType<PngSaver>().As<ISaver>();
+            var excludedGramParts = new []
+            {
+                GramPartsEnum.Conjunction,
+                GramPartsEnum.NounPronoun,
+                GramPartsEnum.Pretext,
+                GramPartsEnum.Part,
+                GramPartsEnum.PronounAdjective
+            };
+        
+            var mysteam = new Mysteam();
+            var colors = new[] { Color.Blue, Color.Brown, Color.Coral, Color.DarkGreen, };
+
+            var builder = new ContainerBuilder();
 
             builder.RegisterType<ArchimedeanSpiral>()
                 .As<ISpiral>()
                 .WithParameter(new TypedParameter(typeof(Point), parameters.Size.GetCenter()));
+            
+            builder.RegisterType<Analysator>()
+                .As<IAnalysator>();
 
-            builder.RegisterType<LexicAnalysator>()
-                .As<IAnalysator>()
-                .WithParameter(new TypedParameter(typeof(Mysteam), new Mysteam()));
+            builder.RegisterType<Filter>()
+                .As<IFilter>()
+                .WithParameter( 
+                    new TypedParameter(typeof(GramPartsEnum[]), excludedGramParts)
+                    );
+
+
+            builder.RegisterType<Splitter>()
+                .As<ISplitter>()
+                .WithParameters(new[] {
+                    new TypedParameter(typeof(char[]), chars),
+                    new TypedParameter(typeof(Mysteam), mysteam)
+                });
+
+            builder.RegisterType<Formatter>()
+                .As<IFormatter>();
 
             builder.RegisterType<CircularCloudLayouter>()
                 .As<ICloudLayouter>();
 
             builder.RegisterType<TextVisualisator>()
-                .As<ITextVisualisator>();
-
-            builder.RegisterType<FileTextInputer>()
-                .As<IInputer>()
-                .WithParameter(new TypedParameter(typeof(string), parameters.FileName));
+                .As<ITextVisualisator>()
+                .WithParameter(
+                    new TypedParameter(typeof(Color[]), colors)
+                );                
 
             builder.RegisterType<CloudPainter>();
             return builder.Build();

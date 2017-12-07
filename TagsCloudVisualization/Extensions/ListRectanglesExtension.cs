@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace TagsCloudVisualization.Extensions
 {
-    static class ListRectanglesExtension
+    public static class ListRectanglesExtension
     {
         public static bool ContainPoint(this List<Rectangle> rectangles, Point point) =>
             rectangles.Any(r => r.Contains(point));

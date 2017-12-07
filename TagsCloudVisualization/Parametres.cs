@@ -10,7 +10,9 @@ namespace TagsCloudVisualization
         public Size Size => new Size(Width, Height);
         public double FontSizeMin { get; set; }
         public double FontSizeMax { get; set; }
+        public string Text { get; set; }
         public string FileName { get; set; }
         public string FontName { get; set; }
+        public string ImageName { get; set; }
     }
 }

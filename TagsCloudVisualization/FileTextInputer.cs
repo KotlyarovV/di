@@ -3,15 +3,15 @@ using System.Text;
 
 namespace TagsCloudVisualization
 {
-    class FileTextInputer : IInputer
+    class FileTextInputer
     {
-        private readonly string text;
+        private readonly string textName;
 
         public FileTextInputer(string fileName)
         {
-            text = File.ReadAllText(fileName, Encoding.Default);
+            textName = fileName;
         }
 
-        public string GetText() => text;
+        public string GetText() => File.ReadAllText(textName, Encoding.Default);
     }
 }

@@ -1,93 +1,80 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using FluentAssertions;
 using NUnit.Framework.Interfaces;
+using TagsCloudVisualization;
 using TagsCloudVisualization.Extensions;
 
 
-namespace TagsCloudVisualization.TagsCloudVisualizationTests
+namespace TagCloudVisualisation_Tests
 {
     [TestFixture]
-    class CircularCloudLayouter_should
+    class CircularCloudLayouterShould
     {
         private Point startPoint;
         private Size sizeMin;
         private CircularCloudLayouter circularCloud;
+        private List<Rectangle> cloudRectangles;
 
-        private void InitializationOfRandomRectangles(int numberOfPoints)
+        private List<Rectangle> InitializationOfRandomRectangles(int numberOfPoints)
         {
-            Visualisator visualisator = new Visualisator(circularCloud);
-            visualisator.GenerateRandomRectangles(numberOfPoints);
+            var visualisator = new Visualisator(circularCloud);
+            cloudRectangles = visualisator.GenerateRandomRectangles(numberOfPoints);
+            return cloudRectangles;
         }
 
         [SetUp]
         public void SetUp()
         {
             startPoint = new Point(1, 1);
-            ISpiral s = new ArchimedeanSpiral(startPoint);
-            circularCloud = new CircularCloudLayouter(s);
+            circularCloud = new CircularCloudLayouter(new ArchimedeanSpiral(startPoint));
             sizeMin = new Size(1, 1);
+            cloudRectangles = new List<Rectangle>();
         }
-
-        [Test]
-        public void GetCenterPiont_ReturnCenterPoint()
-        {
-            Assert.AreEqual(circularCloud.Spiral.Center, new Point(1, 1));
-        }
-
+        
+        
         [Test]
         public void SetFirstMinRectangle_SetRectangleUpperCentre()
         {
             var rectangle = circularCloud.PutNextRectangle(sizeMin);
+            cloudRectangles.Add(rectangle);
             rectangle.Should().Be(new Rectangle(1, 2, 1, 1));
         }
 
         [Test]
         public void SetTwoRectangle_SetSecondUpperFirst()
         {
-            circularCloud.PutNextRectangle(sizeMin);
+            cloudRectangles.Add(circularCloud.PutNextRectangle(sizeMin));
             var secondRectangle = circularCloud.PutNextRectangle(sizeMin);
+            cloudRectangles.Add(secondRectangle);
             secondRectangle.Should().Be(new Rectangle(1, 3, 1, 1));
         }
 
         [Test]
         public void SetThreeRectangle_SetInStraightAngel()
         {
-            circularCloud.PutNextRectangle(sizeMin);
-            circularCloud.PutNextRectangle(sizeMin);
+            cloudRectangles.Add(circularCloud.PutNextRectangle(sizeMin));
+            cloudRectangles.Add(circularCloud.PutNextRectangle(sizeMin));
 
             var thirdRectangle = circularCloud.PutNextRectangle(sizeMin);
+            cloudRectangles.Add(thirdRectangle);
             thirdRectangle.Should().Be(new Rectangle(0, 3, 1, 1));
         }        
-
+        
         [Test]
         public void TwoBigRectangles_IsNotInterspected()
         {
             var bigSize = new Size(100, 100);
-            circularCloud.PutNextRectangle(bigSize);
-            circularCloud.PutNextRectangle(bigSize);
-            circularCloud.Rectangles.AnyIntersected().Should().BeFalse();
+            cloudRectangles.Add(circularCloud.PutNextRectangle(bigSize));
+            cloudRectangles.Add(circularCloud.PutNextRectangle(bigSize));
+            cloudRectangles.AnyIntersected().Should().BeFalse();
         }
-
-
-        [TestCase(0, TestName = "zero rectangles")]
-        [TestCase(1, TestName = "one rectangle")]
-        [TestCase(10, TestName = "ten rectangles")]
-        [TestCase(100, TestName = "hundried rectangles")]
-        public void RectanglesOnSpiral_MustBeTrue(int numberOfPoints)
-        {
-            var spiral = new ArchimedeanSpiral(startPoint);
-            InitializationOfRandomRectangles(200);
-            circularCloud.Rectangles.All(rectangle => spiral.CheckBalancedPointOnSpiral(rectangle.Location))
-                .Should()
-                .BeTrue();
-        }
-
         
-
+            
         [TestCase(-1, 0, TestName = "negative number and zero in size")]
         [TestCase(-1, -10, TestName = "two negative numbers in size")]
         [TestCase(0, 0, TestName = "two zeros in size")]
@@ -103,18 +90,18 @@ namespace TagsCloudVisualization.TagsCloudVisualizationTests
         [TestCase(300, TestName = "three hundred of rectangles")]
         public void BigRandomCloud_IsCircle(int numberOfPoints)
         {
-            InitializationOfRandomRectangles(numberOfPoints);
+            var rectangles = InitializationOfRandomRectangles(numberOfPoints);
 
-            var sortedByXRectangles = circularCloud.Rectangles.OrderBy(x => x.Location.X);
+            var sortedByXRectangles = rectangles.OrderBy(x => x.Location.X);
             var mostLeftPoint = sortedByXRectangles.First().Location;
             var mostRightPoint = sortedByXRectangles.Last().Location;
 
-            var sortedByYRectangles = circularCloud.Rectangles.OrderBy(x => (x.Location.Y));
+            var sortedByYRectangles = rectangles.OrderBy(x => (x.Location.Y));
             var mostTopPoint = sortedByYRectangles.Last().Location;
             var mostBottomPoint = sortedByYRectangles.First().Location;
             
             var points = new [] {mostBottomPoint, mostLeftPoint, mostRightPoint, mostTopPoint};
-            var radiuses = points.Select(point => circularCloud.Spiral.Center.GetDistance(point)).ToArray();
+            var radiuses = points.Select(point => startPoint.GetDistance(point)).ToArray();
 
             for (int i = 0; i < radiuses.Length; i++)
                 for (int j = 0; j < radiuses.Length; j++)
@@ -131,15 +118,18 @@ namespace TagsCloudVisualization.TagsCloudVisualizationTests
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
                 var visualisator = new Visualisator(circularCloud);
-                string testName = TestContext.CurrentContext.Test.Name;
-                string filePath = Path.Combine(TestContext.CurrentContext.WorkDirectory, "failed_tests_pictures");
+                var testName = TestContext.CurrentContext.Test.Name;
+                var filePath = Path.Combine(TestContext.CurrentContext.WorkDirectory, "failed_tests_pictures");
 
                 if (!Directory.Exists(filePath))
                     Directory.CreateDirectory(filePath);
-
-                visualisator.SaveBitmap(Path.Combine(filePath, testName + ".jpg"));
+                var saver = new Saver();
+                var bitmap = visualisator.GetBitmap(cloudRectangles);
+                saver.SaveBitmap(Path.Combine(filePath, testName + ".jpg"), bitmap);
                 Console.WriteLine(string.Format("Tag cloud visualization saved to file {0}.jpg", testName));
             }
         }
+        
     }
+    
 }

@@ -5,34 +5,37 @@ using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualization
 {
-    class CircularCloudLayouter : ICloudLayouter
+    public class CircularCloudLayouter : ICloudLayouter
     {
-        public readonly List<Rectangle> Rectangles;
-        public readonly ISpiral Spiral;
-        public Point Center => Spiral.Center;
+        private readonly List<Rectangle> rectangles;
+        private readonly ISpiral spiral;
         
         public CircularCloudLayouter(ISpiral spiral)
         {
-            Spiral = spiral;
-            Rectangles = new List<Rectangle>();
+            this.spiral = spiral;
+            rectangles = new List<Rectangle>();
         }
+
+        private Point BalancePoint(PointF point) =>
+            new Point((int)Math.Floor(point.X), (int)Math.Ceiling(point.Y));
+
 
         private Point ChoosePoint()
         {
             Point point;
             do
             {
-                var pointOnSpiral = Spiral.GetPoint();
-                point = Spiral.BalancePoint(pointOnSpiral);
+                var pointOnSpiral = spiral.GetPoint();
+                point = BalancePoint(pointOnSpiral);
             }
-            while (Rectangles.ContainPoint(point));
+            while (rectangles.ContainPoint(point));
             return point;
         }
 
         private Rectangle ChooseRectangle(Size size, Point point)
         {
             var rectangle = new Rectangle(point, size);
-            while (Rectangles.IntersectRectangle(rectangle))
+            while (rectangles.IntersectRectangle(rectangle))
             {
                 point = ChoosePoint();
                 rectangle = new Rectangle(point, size);
@@ -47,7 +50,7 @@ namespace TagsCloudVisualization
 
             var point = ChoosePoint();
             var rectangle = ChooseRectangle(rectangleSize, point);
-            Rectangles.Add(rectangle);
+            rectangles.Add(rectangle);
             return rectangle;
         }        
     }

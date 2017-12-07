@@ -1,26 +1,31 @@
 ﻿using System;
 using System.Drawing;
 using NUnit.Framework;
+using TagsCloudVisualization;
 
-namespace TagsCloudVisualization
+namespace TagCloudVisualisation_Tests
 {
     [TestFixture]
-    class Spiral_should
+    class SpiralShould
     {
         private ArchimedeanSpiral spiral;
         private Point startPoint;
+        private double spiralRadius;
+        private double spiralAngle;
+        private const double AngleStep = 0.1;
 
         [SetUp]
         public void SetUp()
         {
             startPoint = new Point(1, 1);
-            spiral = new ArchimedeanSpiral(startPoint);
+            spiral = new ArchimedeanSpiral(startPoint, AngleStep, spiralRadius);
         }
 
 
         /*
          * test based on http://hijos.ru/2011/03/09/arximedova-spiral/
          */
+         
         [TestCase(1)]
         [TestCase(50)]
         [TestCase(100)]
@@ -28,15 +33,17 @@ namespace TagsCloudVisualization
         {
             for (var i = 0; i < numberOfPoints; i++)
             {
-                var spiralPoint = spiral.GetPoint();
+                spiralAngle += AngleStep;
 
-                spiralPoint = Tuple.Create(spiralPoint.Item1 - spiral.Center.X, spiralPoint.Item2 - spiral.Center.Y);
+                var spiralPoint = spiral.GetPoint();
+                spiralPoint = new PointF(spiralPoint.X - startPoint.X, spiralPoint.Y - startPoint.Y);
                 
-                var sumXYSquares = Math.Pow(spiralPoint.Item1, 2) + Math.Pow(spiralPoint.Item2, 2);
-                var radiusAndAngleSquare = Math.Pow(spiral.SpiralAngle * spiral.SpiralRadius, 2);
+                var sumXYSquares = Math.Pow(spiralPoint.X, 2) + Math.Pow(spiralPoint.Y, 2);
+                var radiusAndAngleSquare = Math.Pow(spiralAngle * spiralRadius, 2);
 
                 Assert.True(Math.Abs(sumXYSquares - radiusAndAngleSquare) < 0.000001);
             }
         }
+        
     }
 }

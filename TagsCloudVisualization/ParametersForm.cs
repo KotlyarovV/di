@@ -41,22 +41,29 @@ namespace TagsCloudVisualization
             parameters.FileName = fileinput.Text;
             parameters.FontSizeMax = double.Parse(maxfontsize.Text);
             parameters.FontSizeMin = double.Parse(minfontsize.Text);
+            parameters.ImageName = outputfile.Text;
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            try
-            {
+            
                 GetParameters();
                 var container = ConteinerConfigurator.ConfigureContainer(parameters);
                 var cloudPainter = container.Resolve<CloudPainter>();
-                var bitmap = cloudPainter.GetBitmap(parameters);
+                var textInputer = new FileTextInputer(parameters.FileName);
+                var text = textInputer.GetText();
+                var bitmap = cloudPainter.GetBitmap(
+                    text,
+                    parameters.Width,
+                    parameters.Height,
+                    parameters.FontSizeMin,
+                    parameters.FontSizeMax
+                );
                 Hide();
                 var form1 = new Form1(bitmap);
                 form1.Closed += (s, args) => Close();
                 form1.Show();
-            }
-            catch { }
+            
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -66,11 +73,31 @@ namespace TagsCloudVisualization
                 GetParameters();
                 var container = ConteinerConfigurator.ConfigureContainer(parameters);
                 var cloudPainter = container.Resolve<CloudPainter>();
-                var bitmap = cloudPainter.GetBitmap(parameters);
-                cloudPainter.SaveBitmap(bitmap);
-
+            
+                var textInputer = new FileTextInputer(parameters.FileName);
+                var text = textInputer.GetText();
+                var bitmap = cloudPainter.GetBitmap(
+                    text,
+                    parameters.Width,
+                    parameters.Height,
+                    parameters.FontSizeMin,
+                    parameters.FontSizeMax
+                );
+                var saver = new Saver();
+                saver.SaveBitmap(parameters.ImageName, bitmap);
+                
             }
             catch { }
+        }
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

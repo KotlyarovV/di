@@ -1,60 +1,69 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using Fclp.Internals.Extensions;
 
 namespace TagsCloudVisualization
 {
     class TextVisualisator : ITextVisualisator
     {
+        private List<TextImage> textImages;
+        private Dictionary<string, double> weights;
+        private readonly Color[] colors;
 
-        public List<Tuple<string, float>> GetFontSizes(
-            Dictionary<string, double> weights,
-            double maxFont,
-            double minFont)
+        public TextVisualisator(Color[] colors)
         {
-            var result = new List<Tuple<string, float>>();
+            this.colors = colors;
+        }
+
+        public void CreateTextImages(Dictionary<string, double> weights)
+        {
+            this.weights = weights;
+            textImages = new List<TextImage>(); 
+            weights.ForEach((x) => textImages.Add(new TextImage(x.Key)));
+        }
+
+
+        public void SetFontSizes(double maxFont, double minFont)
+        {
             var maxWeight = weights.Values.Max();
             var minWeight = weights.Values.Min();
-            foreach (var weight in weights)
+
+            foreach (var textImage in textImages)
             {
-                var fontSize = (weight.Value > minWeight)
-                    ? maxFont * (weight.Value - minWeight) / (maxWeight - minWeight) + minFont
+                var fontSize = (weights[textImage.Text] > minWeight)
+                    ? maxFont * (weights[textImage.Text] - minWeight) / (maxWeight - minWeight) + minFont
                     : minFont;
-                result.Add(Tuple.Create(weight.Key, (float) fontSize));
+                textImage.FontSize = (float) fontSize;
             }
-            return result;
         }
 
-        public List<TextImage> SetColors(List<TextImage> textImages)
+        public void SetFontTipe(string fontType = "Arial")
         {
-            var colors = new[] { Color.Blue, Color.Brown, Color.Coral, Color.DarkGreen, };
+            textImages.ForEach(textImage => textImage.FontType = fontType);
+        }
+        
+        public void SetColors()
+        {
             for (var i = 0; i < textImages.Count; i++)
             {
-                textImages[i].Color = colors[i % 4];
+                textImages[i].Color = colors[i % colors.Length];
             }
-            return textImages;
         }
 
 
-        public List<TextImage> GetStringImages(
-            List<Tuple<string, float>> fontSizes, string fontTipe)
+        public List<TextImage> GetStringImages()
         {
-            var result = new List<TextImage>();
             var proposedSize = new Size(int.MaxValue, int.MaxValue);
             var flags = TextFormatFlags.NoPadding;
-
-            foreach (var fontSize in fontSizes)
+            foreach (var textImage in textImages)
             {
-                var font = new Font(fontTipe, fontSize.Item2, FontStyle.Regular);
-                var size = TextRenderer.MeasureText(fontSize.Item1,
-                    font, proposedSize, flags);
-                var textImage = new TextImage(size, fontSize.Item1, Color.Black, font);
-                result.Add(textImage);
+                var size = TextRenderer.MeasureText(textImage.Text,
+                    textImage.Font, proposedSize, flags);
+                textImage.Size = size;
             }
-
-            return result;
+            return textImages;
         }
     }
 }

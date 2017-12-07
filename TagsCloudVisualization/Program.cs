@@ -7,47 +7,12 @@ namespace TagsCloudVisualization
 {
     static class Program
     {
-        
-        //Tagscloudvisualization.exe --wh 3000 --ht 3000 --filename battle.txt --fontmin 20 --fontmax 50
-        static void PrepareParser(FluentCommandLineParser<Parameters> parser)
-        {
-            parser.Setup(arg => arg.FileName)
-                .As("filename");
-
-            parser.Setup(arg => arg.Width)
-                .As("wh")
-                .Required();
-
-            parser.Setup(arg => arg.Height)
-                .As("ht")
-                .Required();
-
-            parser.Setup(arg => arg.FontSizeMax)
-                .As("fontmax")
-                .Required();
-
-            parser.Setup(arg => arg.FontName)
-                .As("fontname");
-
-
-            parser.Setup(arg => arg.FontSizeMin)
-                .As("fontmin")
-                .Required();
-
-
-            parser.SetupHelp("?", "help")
-                .Callback((help) => Console.WriteLine());
-
-        }
-
         /// <summary>
         /// Главная точка входа для приложения.
         /// </summary>
         [STAThread]
         public static void Main(string[] args)
         {
-
-
             if (args.Length == 0)
             {
                 Application.EnableVisualStyles();
@@ -58,7 +23,7 @@ namespace TagsCloudVisualization
             else
             {
                 var parser = new FluentCommandLineParser<Parameters>();
-                PrepareParser(parser);
+                ArgParserConfigurator.ArgParserConfigurate(parser);
                 var result = parser.Parse(args);
 
                 if (result.HasErrors)
@@ -68,11 +33,21 @@ namespace TagsCloudVisualization
                 }
                 if (result.EmptyArgs || result.HelpCalled) return;
 
-                var arguments = parser.Object;
-                var container = ConteinerConfigurator.ConfigureContainer(arguments);
+                var parametrs = parser.Object;
+                var container = ConteinerConfigurator.ConfigureContainer(parametrs);
                 var cloudPainter = container.Resolve<CloudPainter>();
-                var bitmap = cloudPainter.GetBitmap(arguments);
-                cloudPainter.SaveBitmap(bitmap);
+                var textInputer = new FileTextInputer(parametrs.FileName);
+                var text = textInputer.GetText();
+                
+                var bitmap = cloudPainter.GetBitmap(
+                    text,
+                    parametrs.Width,
+                    parametrs.Height,
+                    parametrs.FontSizeMin,
+                    parametrs.FontSizeMax
+                    );
+                var saver = new Saver();
+                saver.SaveBitmap(parametrs.ImageName, bitmap);
                 
             }
         }

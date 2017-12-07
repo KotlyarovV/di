@@ -4,17 +4,18 @@ namespace TagsCloudVisualization
 {
     class TextImage
     {
-        public readonly Size Size;
+        public Size Size { get; set; }
         public readonly string Text;
-        public Color Color;
-        public readonly Font Font;
+        public Color Color { get; set; }
+        private FontStyle style = FontStyle.Regular;
+        public float FontSize { private get; set; }
+        public string FontType { private get; set; }
 
-        public TextImage(Size size, string text, Color color, Font font)
+        public Font Font => new Font(FontType, FontSize, style);
+
+        public TextImage(string text)
         {
-            Size = size;
             Text = text;
-            Color = color;
-            Font = font;
         }
     }
 }

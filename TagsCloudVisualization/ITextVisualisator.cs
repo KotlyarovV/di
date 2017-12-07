@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace TagsCloudVisualization
 {
     interface ITextVisualisator
     {
-        List<Tuple<string, float>> GetFontSizes(Dictionary<string, double> weights, double maxFont, double minFont);
-
-        List<TextImage> GetStringImages(List<Tuple<string, float>> fontSizes, string fontName);
-        List<TextImage> SetColors(List<TextImage> textImages);
+        void SetFontSizes(double maxFont, double minFont);
+        void CreateTextImages(Dictionary<string, double> weights);
+        void SetFontTipe(string fontType);
+        void SetColors();
+        List<TextImage> GetStringImages();
     }
 }
