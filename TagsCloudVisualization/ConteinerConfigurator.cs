@@ -11,8 +11,7 @@ namespace TagsCloudVisualization
         public static IContainer ConfigureContainer(Parameters parameters)
         {
             
-            var chars = new [] {'!', ',', '"', '\r', '\n'};
-           
+            var chars = new [] {'!', ',', '"', '\r', '\n'};           
 
             var excludedGramParts = new []
             {
@@ -23,10 +22,10 @@ namespace TagsCloudVisualization
                 GramPartsEnum.PronounAdjective
             };
         
-            var mysteam = new Mysteam();
             var colors = new[] { Color.Blue, Color.Brown, Color.Coral, Color.DarkGreen, };
 
             var builder = new ContainerBuilder();
+            builder.RegisterType<Mysteam>().As<Mysteam>().SingleInstance();
 
             builder.RegisterType<ArchimedeanSpiral>()
                 .As<ISpiral>()
@@ -41,12 +40,10 @@ namespace TagsCloudVisualization
                     new TypedParameter(typeof(GramPartsEnum[]), excludedGramParts)
                     );
 
-
             builder.RegisterType<Splitter>()
                 .As<ISplitter>()
                 .WithParameters(new[] {
                     new TypedParameter(typeof(char[]), chars),
-                    new TypedParameter(typeof(Mysteam), mysteam)
                 });
 
             builder.RegisterType<Formatter>()
@@ -60,7 +57,7 @@ namespace TagsCloudVisualization
                 .WithParameter(
                     new TypedParameter(typeof(Color[]), colors)
                 );                
-
+                
             builder.RegisterType<CloudPainter>();
             return builder.Build();
         }
