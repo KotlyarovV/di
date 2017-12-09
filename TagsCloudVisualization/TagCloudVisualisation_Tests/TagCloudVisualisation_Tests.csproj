@@ -74,10 +74,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CircularCloudLayouterShould.cs" />
-    <Compile Include="MySteamInstance.cs" />
     <Compile Include="SpiralShould.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SplitterShould.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
