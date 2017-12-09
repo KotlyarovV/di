@@ -5,7 +5,7 @@ using YandexMystem.Wrapper.Models;
 
 namespace TagsCloudVisualization
 {
-    class Splitter : ISplitter
+    public class Splitter : ISplitter
     {
         private readonly Mysteam mysteam;
         private readonly char[] replacedChars;
