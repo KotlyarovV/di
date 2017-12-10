@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Castle.Components.DictionaryAdapter.Xml;
 using Moq;
 using NUnit.Framework;
 using TagsCloudVisualization;
