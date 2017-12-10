@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace TagsCloudVisualization
 {
-    class CloudPainter
+    public class CloudPainter
     {
         private readonly ICloudLayouter cloudLayouter;
         private readonly IAnalysator lexicAnalysator;
@@ -50,7 +50,7 @@ namespace TagsCloudVisualization
 
             var stringImages = textVisualisator.GetStringImages();
 
-            stringImages = stringImages.OrderBy(stringImage => (-stringImage.Size.Width * stringImage.Size.Height)).ToList();
+            stringImages = stringImages.OrderBy(stringImage => - stringImage.Size.Width * stringImage.Size.Height).ToList();
             return stringImages;
         }
         

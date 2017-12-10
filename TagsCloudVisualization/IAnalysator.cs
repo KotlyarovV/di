@@ -2,7 +2,7 @@
 
 namespace TagsCloudVisualization
 {
-    interface IAnalysator
+    public interface IAnalysator
     {
         Dictionary<string, double> GetWeights(IReadOnlyCollection<string> words);
     }

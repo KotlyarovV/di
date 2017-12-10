@@ -3,7 +3,7 @@ using YandexMystem.Wrapper.Models;
 
 namespace TagsCloudVisualization
 {
-    interface IFilter
+    public interface IFilter
     {
         IEnumerable<WordModel> FilterWords(IEnumerable<WordModel> words);
     }

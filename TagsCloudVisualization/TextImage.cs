@@ -2,7 +2,7 @@
 
 namespace TagsCloudVisualization
 {
-    class TextImage
+    public class TextImage
     {
         public Size Size { get; set; }
         public readonly string Text;

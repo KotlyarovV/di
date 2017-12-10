@@ -2,7 +2,7 @@
 
 namespace TagsCloudVisualization
 {
-    interface ITextVisualisator
+    public interface ITextVisualisator
     {
         void SetFontSizes(double maxFont, double minFont);
         void CreateTextImages(Dictionary<string, double> weights);
