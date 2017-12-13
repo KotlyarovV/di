@@ -21,7 +21,6 @@ namespace TagCloudVisualisation_Tests
             circularCloud = new CircularCloudLayouter(spiraMock.Object);
         }
         
-        
         [Test]
         public void SetRectangleOnPoint_SetRectangleOnBalancedPoint()
         {
@@ -74,7 +73,8 @@ namespace TagCloudVisualisation_Tests
         [TestCase(5, -10, TestName = "negative and positive number in size")]
         public void ZeroOrNegativeNumbersInSize_ThrowsArgumentException(int width, int height)
         {
-            Assert.Throws<ArgumentException>(() => circularCloud.PutNextRectangle(new Size(width, height)));
+            Action getRectangle = () => circularCloud.PutNextRectangle(new Size(width, height));
+            getRectangle.ShouldThrow<ArgumentException>();
         }
     }
     

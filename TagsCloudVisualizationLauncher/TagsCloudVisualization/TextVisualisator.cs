@@ -14,9 +14,11 @@ namespace TagsCloudVisualization
         public TextVisualisator(Color[] colors)
         {
             this.colors = colors;
+            weights = new Dictionary<string, double>();
+            textImages = new List<TextImage>();
         }
 
-        public void CreateTextImages(Dictionary<string, double> weights)
+        public ITextVisualisator CreateTextImages(Dictionary<string, double> weights)
         {
             this.weights = weights;
             textImages = new List<TextImage>();
@@ -24,11 +26,14 @@ namespace TagsCloudVisualization
             {
                 textImages.Add(new TextImage(weight.Key));
             }
+            return this;
         }
 
 
-        public void SetFontSizes(double maxFont, double minFont)
+        public ITextVisualisator SetFontSizes(double maxFont, double minFont)
         {
+            if (weights.Count == 0) return this;
+
             var maxWeight = weights.Values.Max();
             var minWeight = weights.Values.Min();
 
@@ -39,19 +44,25 @@ namespace TagsCloudVisualization
                     : minFont;
                 textImage.FontSize = (float) fontSize;
             }
+            return this;
         }
 
-        public void SetFontTipe(string fontType = "Arial")
+        public ITextVisualisator SetFontTipe(string fontType = "Arial")
         {
-            textImages.ForEach(textImage => textImage.FontType = fontType);
+            foreach (var textImage in textImages)
+            {
+                textImage.FontType = fontType;
+            }
+            return this;
         }
         
-        public void SetColors()
+        public ITextVisualisator SetColors()
         {
             for (var i = 0; i < textImages.Count; i++)
             {
                 textImages[i].Color = colors[i % colors.Length];
             }
+            return this;
         }
 
 

@@ -227,7 +227,7 @@
             this.ClientSize = new System.Drawing.Size(284, 261);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "ParametersForm";
-            this.Text = "ParametersForm";
+            this.Text = "6";
             this.Load += new System.EventHandler(this.ParametersForm_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();

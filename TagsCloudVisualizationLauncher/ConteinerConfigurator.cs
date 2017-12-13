@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.IO;
 using Autofac;
 using TagsCloudVisualization.Extensions;
 using TagsCloudVisualization;
@@ -9,10 +10,13 @@ namespace TagsCloudVisualization
 {
     public static class ConteinerConfigurator
     {
+        public const string OutStreamName = "outStreamName";
+        public const string InputStreamName = "inputStreamName";
+
         public static IContainer ConfigureContainer(Parameters parameters)
         {
             
-            var chars = new [] {'!', ',', '"', '\r', '\n'};           
+            var chars = new [] {'!', ',', '"', '\r', '\n'};
 
             var excludedGramParts = new []
             {
@@ -23,7 +27,15 @@ namespace TagsCloudVisualization
                 GramPartsEnum.PronounAdjective
             };
         
-            var colors = new[] { Color.Blue, Color.Brown, Color.Coral, Color.DarkGreen, };
+            var colors = new[]
+            {
+                Color.Crimson,
+                Color.DarkSalmon,
+                Color.IndianRed,
+                Color.Plum,
+                Color.Violet,
+                Color.MediumOrchid
+            };
 
             var builder = new ContainerBuilder();
             builder.RegisterType<Mysteam>().As<Mysteam>().SingleInstance();
@@ -41,25 +53,54 @@ namespace TagsCloudVisualization
                     new TypedParameter(typeof(GramPartsEnum[]), excludedGramParts)
                     );
 
-            builder.RegisterType<Splitter>()
-                .As<ISplitter>()
+            builder
+                .RegisterType<Splitter>()
+                .As<ISplitter>();
+
+            builder
+                .RegisterType<TextCleaner>()
+                .As<ITextCleaner>()
                 .WithParameters(new[] {
                     new TypedParameter(typeof(char[]), chars),
                 });
 
-            builder.RegisterType<Formatter>()
+            builder
+                .RegisterType<Formatter>()
                 .As<IFormatter>();
 
-            builder.RegisterType<CircularCloudLayouter>()
+            builder
+                .RegisterType<CircularCloudLayouter>()
                 .As<ICloudLayouter>();
 
-            builder.RegisterType<TextVisualisator>()
+            builder
+                .RegisterType<TextVisualisator>()
                 .As<ITextVisualisator>()
                 .WithParameter(
                     new TypedParameter(typeof(Color[]), colors)
-                );                
+                );
+            
+            builder
+                .RegisterType<FileStream>()
+                .Named<Stream>(OutStreamName)
+                .WithParameters(
+                    new []
+                    {
+                        new TypedParameter(typeof(string), parameters.ImageName),
+                        new TypedParameter(typeof(FileMode), FileMode.Create)
+                    });
                 
-            builder.RegisterType<CloudPainter>().AsSelf();
+            builder
+                .RegisterType<FileStream>()
+                .Named<Stream>(InputStreamName)
+                .WithParameters(
+                    new []
+                    {
+                        new TypedParameter(typeof(string), parameters.FileName),
+                        new TypedParameter(typeof(FileMode), FileMode.Open)
+                    }
+                );
+
+            builder.RegisterType<CloudPainter>().As<ICloudPainter>();
             return builder.Build();
         }
     }

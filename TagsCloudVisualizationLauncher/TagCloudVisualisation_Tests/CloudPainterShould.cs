@@ -17,6 +17,7 @@ namespace TagCloudVisualisation_Tests
         private Mock<IFilter> filterMock;
         private Mock<IAnalysator> analysatorMock;
         private Mock<ITextVisualisator> textVisualisatorMock;
+        private Mock<ITextCleaner> textCleanerMock;
 
         [SetUp]
         public void SetUp()
@@ -27,6 +28,7 @@ namespace TagCloudVisualisation_Tests
             analysatorMock = new Mock<IAnalysator>();
             textVisualisatorMock = new Mock<ITextVisualisator>();
             cloudLayouterMock = new Mock<ICloudLayouter>();
+            textCleanerMock = new Mock<ITextCleaner>();
 
             cloudPainter = new CloudPainter(
                 splitterMock.Object,
@@ -34,14 +36,19 @@ namespace TagCloudVisualisation_Tests
                 filterMock.Object,
                 analysatorMock.Object,
                 cloudLayouterMock.Object,
-                textVisualisatorMock.Object
+                textVisualisatorMock.Object,
+                textCleanerMock.Object
             );
         }
 
         private void GetMockedBitmap()
         {
-            var text = "один два три";
+            var text = "один, два, три";
             var words = new[] {"один", "два", "три"};
+
+            textCleanerMock
+                .Setup(cleaner => cleaner.RemoveSigns(It.IsAny<string>()))
+                .Returns("один  два  три");
 
             splitterMock.Setup(splitter => splitter.Split(It.IsAny<string>()));
             filterMock.Setup(filter => filter.FilterWords(It.IsAny<IEnumerable<WordModel>>()));
@@ -51,17 +58,28 @@ namespace TagCloudVisualisation_Tests
 
             analysatorMock.Setup(analysator => analysator.GetWeights(It.IsAny<IReadOnlyCollection<string>>()));
 
-            textVisualisatorMock.Setup(textVisualisator =>
-                textVisualisator.CreateTextImages(It.IsAny<Dictionary<string, double>>()));
+            textVisualisatorMock
+                .Setup(textVisualisator =>
+                    textVisualisator.CreateTextImages(It.IsAny<Dictionary<string, double>>()))
+                .Returns(textVisualisatorMock.Object);
 
-            textVisualisatorMock.Setup(textVisualisator => textVisualisator.SetColors());
-            textVisualisatorMock.Setup(textVisualisator => textVisualisator.SetFontSizes(
-                It.IsAny<double>(),
-                It.IsAny<double>())
-            );
-            textVisualisatorMock.Setup(textVisualisator => textVisualisator.SetFontTipe(It.IsAny<string>()));
+            textVisualisatorMock
+                .Setup(textVisualisator => textVisualisator.SetColors())
+                .Returns(textVisualisatorMock.Object);
 
-            textVisualisatorMock.Setup(textVisualisator => textVisualisator.GetStringImages())
+            textVisualisatorMock
+                .Setup(textVisualisator => textVisualisator.SetFontSizes(
+                    It.IsAny<double>(),
+                    It.IsAny<double>())
+                )
+                .Returns(textVisualisatorMock.Object);
+
+            textVisualisatorMock
+                .Setup(textVisualisator => textVisualisator.SetFontTipe(It.IsAny<string>()))
+                .Returns(textVisualisatorMock.Object);
+
+            textVisualisatorMock
+                .Setup(textVisualisator => textVisualisator.GetStringImages())
                 .Returns(new List<TextImage>(new []
                 {
                     new TextImage("один")

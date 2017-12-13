@@ -52,20 +52,23 @@
     <Compile Include="ArchimedeanSpiral.cs" />
     <Compile Include="CircularCloudLayouter.cs" />
     <Compile Include="CloudPainter.cs" />
-    <Compile Include="Extensions\ListRectanglesExtension.cs" />
+    <Compile Include="Extensions\EnumerableRectanglesExtension.cs" />
     <Compile Include="Extensions\PointExtension.cs" />
     <Compile Include="Extensions\SizeExtension.cs" />
     <Compile Include="Filter.cs" />
     <Compile Include="Formatter.cs" />
     <Compile Include="IAnalysator.cs" />
     <Compile Include="ICloudLayouter.cs" />
+    <Compile Include="ICloudPainter.cs" />
     <Compile Include="IFilter.cs" />
     <Compile Include="IFormatter.cs" />
     <Compile Include="ISpiral.cs" />
     <Compile Include="ISplitter.cs" />
+    <Compile Include="ITextCleaner.cs" />
     <Compile Include="ITextVisualisator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Splitter.cs" />
+    <Compile Include="TextCleaner.cs" />
     <Compile Include="TextImage.cs" />
     <Compile Include="TextVisualisator.cs" />
   </ItemGroup>

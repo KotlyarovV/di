@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 using System.Windows.Forms;
 using Autofac;
 using Fclp;
@@ -35,9 +37,15 @@ namespace TagsCloudVisualization
 
                 var parametrs = parser.Object;
                 var container = ConteinerConfigurator.ConfigureContainer(parametrs);
-                var cloudPainter = container.Resolve<CloudPainter>();
-                var textInputer = new FileTextInputer(parametrs.FileName);
-                var text = textInputer.GetText();
+                var cloudPainter = container.Resolve<ICloudPainter>();
+
+                var inputStream = container.ResolveNamed<Stream>(ConteinerConfigurator.InputStreamName);
+                string text;
+
+                using (var reader = new StreamReader(inputStream, Encoding.Default))
+                {
+                    text = reader.ReadToEnd();
+                }
                 
                 var bitmap = cloudPainter.GetBitmap(
                     text,
@@ -46,9 +54,10 @@ namespace TagsCloudVisualization
                     parametrs.FontSizeMin,
                     parametrs.FontSizeMax
                     );
-                var saver = new Saver();
-                saver.SaveBitmap(parametrs.ImageName, bitmap);
-                
+
+                var outStream = container.ResolveNamed<Stream>(ConteinerConfigurator.OutStreamName);
+                var imageFormat = parametrs.GetImageFormat();
+                bitmap.Save(outStream, imageFormat);
             }
         }
     }

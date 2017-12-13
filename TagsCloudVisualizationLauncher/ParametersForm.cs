@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Text;
 using System.Windows.Forms;
 using Autofac;
 
@@ -47,23 +51,29 @@ namespace TagsCloudVisualization
         private void button2_Click(object sender, EventArgs e)
         {
             
-                GetParameters();
-                var container = ConteinerConfigurator.ConfigureContainer(parameters);
-                var cloudPainter = container.Resolve<CloudPainter>();
-                var textInputer = new FileTextInputer(parameters.FileName);
-                var text = textInputer.GetText();
-                var bitmap = cloudPainter.GetBitmap(
+            GetParameters();
+            var container = ConteinerConfigurator.ConfigureContainer(parameters);
+            var cloudPainter = container.Resolve<ICloudPainter>();
+            var inputStream = container.ResolveNamed<Stream>(ConteinerConfigurator.InputStreamName);
+
+            string text;
+            using (var reader = new StreamReader(inputStream, Encoding.Default))
+            {
+                text = reader.ReadToEnd();
+            }
+            
+            var bitmap = cloudPainter.GetBitmap(
                     text,
                     parameters.Width,
                     parameters.Height,
                     parameters.FontSizeMin,
                     parameters.FontSizeMax
                 );
-                Hide();
-                var form1 = new Form1(bitmap);
-                form1.Closed += (s, args) => Close();
-                form1.Show();
             
+            Hide();
+            var form1 = new Form1(bitmap);
+            form1.Closed += (s, args) => Close();
+            form1.Show();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -72,10 +82,15 @@ namespace TagsCloudVisualization
             {
                 GetParameters();
                 var container = ConteinerConfigurator.ConfigureContainer(parameters);
-                var cloudPainter = container.Resolve<CloudPainter>();
-            
-                var textInputer = new FileTextInputer(parameters.FileName);
-                var text = textInputer.GetText();
+                var cloudPainter = container.Resolve<ICloudPainter>();
+                var inputStream = container.ResolveNamed<Stream>(ConteinerConfigurator.InputStreamName);
+
+                string text;
+                using (var reader = new StreamReader(inputStream, Encoding.Default))
+                {
+                    text = reader.ReadToEnd();
+                }
+
                 var bitmap = cloudPainter.GetBitmap(
                     text,
                     parameters.Width,
@@ -83,9 +98,10 @@ namespace TagsCloudVisualization
                     parameters.FontSizeMin,
                     parameters.FontSizeMax
                 );
-                var saver = new Saver();
-                saver.SaveBitmap(parameters.ImageName, bitmap);
-                
+
+                var outStream = container.ResolveNamed<Stream>(ConteinerConfigurator.OutStreamName);
+                var imageFormat = parameters.GetImageFormat();
+                bitmap.Save(outStream, imageFormat);
             }
             catch { }
         }
