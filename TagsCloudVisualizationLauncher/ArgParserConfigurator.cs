@@ -1,7 +1,7 @@
 ﻿using System;
 using Fclp;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualizationLauncher
 {
     static class ArgParserConfigurator
     {

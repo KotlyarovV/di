@@ -4,8 +4,9 @@ using System.Text;
 using System.Windows.Forms;
 using Autofac;
 using Fclp;
+using TagsCloudVisualization;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualizationLauncher
 {
     static class Program
     {

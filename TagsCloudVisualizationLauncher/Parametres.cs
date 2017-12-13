@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualizationLauncher
 {
     public class Parameters
     {

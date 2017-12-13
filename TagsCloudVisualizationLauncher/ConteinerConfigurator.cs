@@ -1,12 +1,12 @@
 ﻿using System.Drawing;
 using System.IO;
 using Autofac;
-using TagsCloudVisualization.Extensions;
 using TagsCloudVisualization;
+using TagsCloudVisualization.Extensions;
 using YandexMystem.Wrapper;
 using YandexMystem.Wrapper.Enums;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualizationLauncher
 {
     public static class ConteinerConfigurator
     {

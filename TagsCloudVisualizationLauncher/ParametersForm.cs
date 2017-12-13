@@ -5,12 +5,13 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using Autofac;
+using TagsCloudVisualization;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualizationLauncher
 {
     public partial class ParametersForm : Form
     {
-        readonly Parameters parameters;
+        private readonly Parameters parameters;
         public ParametersForm()
         {
             InitializeComponent();

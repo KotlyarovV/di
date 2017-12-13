@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 using TagsCloudVisualization;
 
@@ -13,7 +8,7 @@ namespace TagCloudVisualisation_Tests
     class TextCleanerShould
     {
         private TextCleaner textCleaner;
-        private char[] extendedChars = {',', '.', ':', '!', '\n', '\t', '?'};
+        private readonly char[] extendedChars = {',', '.', ':', '!', '\n', '\t', '?'};
 
         [SetUp]
         public void SetUp()

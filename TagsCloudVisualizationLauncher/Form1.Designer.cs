@@ -1,4 +1,4 @@
-﻿namespace TagsCloudVisualization
+﻿namespace TagsCloudVisualizationLauncher
 {
     partial class Form1
     {
