@@ -3,8 +3,8 @@ using YandexMystem.Wrapper.Models;
 
 namespace TagsCloudVisualization
 {
-    public interface ISplitter
+    public interface IWordExtractor
     {
-        IEnumerable<WordModel> Split(string text);
+        IEnumerable<Word> ExtractWords(string text);
     }
 }

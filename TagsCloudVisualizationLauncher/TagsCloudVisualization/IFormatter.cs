@@ -5,6 +5,6 @@ namespace TagsCloudVisualization
 {
     public interface IFormatter
     {
-        IEnumerable<string> FormatWords(IEnumerable<WordModel> words);
+        IEnumerable<string> FormatWords(IEnumerable<Word> words);
     }
 }

@@ -16,13 +16,12 @@ namespace TagCloudVisualisation_Tests
             textCleaner = new TextCleaner(extendedChars);
         }
 
-        [TestCase("Один, два, три\t", "Один  два  три ", TestName = "Commas and tabulation symbol")]
-        [TestCase("!Один ,два ..три\n", " Один  два   три ", TestName = "Signs and new line")]
+        [TestCase("Один, два, три\tчетыре", "Один  два  три четыре", TestName = "Commas and tabulation symbol")]
+        [TestCase("!Один ,два ..три\nчетыре", " Один  два   три четыре", TestName = "Signs and new line")]
         [TestCase("!Один ,два :.три?", " Один  два   три ", TestName = "All signs in text")]
         public void CleanString_DeleteSignst(string text, string result)
         {
             textCleaner.RemoveSigns(text).Should().Be(result);
         }
-
     }
 }

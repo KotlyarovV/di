@@ -10,13 +10,13 @@ namespace TagsCloudVisualization
         private readonly ICloudLayouter cloudLayouter;
         private readonly IAnalysator lexicAnalysator;
         private readonly ITextVisualisator textVisualisator;
-        private readonly ISplitter splitter;
+        private readonly IWordExtractor wordExtractor;
         private readonly IFormatter formatter;
         private readonly IFilter filter;
         private readonly ITextCleaner textCleaner;
 
         public CloudPainter(
-            ISplitter splitter,
+            IWordExtractor splitter,
             IFormatter formatter,
             IFilter filter,
             IAnalysator lexicAnalysator,
@@ -28,13 +28,13 @@ namespace TagsCloudVisualization
             this.cloudLayouter = cloudLayouter;
             this.lexicAnalysator = lexicAnalysator;
             this.textVisualisator = textVisualisator;
-            this.splitter = splitter;
+            this.wordExtractor = splitter;
             this.formatter = formatter;
             this.filter = filter;
             this.textCleaner = textCleaner;
         }
 
-        private IEnumerable<TextImage> GetStringImagesSorted(
+        private IEnumerable<TextImage> GetStringImages(
             string text, 
             double minFont = 1.0, 
             double maxFont = 10.0, 
@@ -42,7 +42,7 @@ namespace TagsCloudVisualization
             )
         {
             var textWithoutSigns = textCleaner.RemoveSigns(text);
-            var words = splitter.Split(textWithoutSigns);
+            var words = wordExtractor.ExtractWords(textWithoutSigns);
             var filteredWords = filter.FilterWords(words);
 
             var formattedWords = formatter
@@ -72,7 +72,7 @@ namespace TagsCloudVisualization
         {
             var bitmap = new Bitmap(width, height);
             var graphics = Graphics.FromImage(bitmap);
-            var textImages = GetStringImagesSorted(text, minFont, maxFont, fontName);
+            var textImages = GetStringImages(text, minFont, maxFont, fontName);
             textImages = textImages.OrderBy(stringImage => -stringImage.Size.Width * stringImage.Size.Height);
 
             var flags = TextFormatFlags.NoPadding | TextFormatFlags.NoClipping;

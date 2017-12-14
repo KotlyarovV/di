@@ -54,8 +54,8 @@ namespace TagsCloudVisualizationLauncher
                     );
 
             builder
-                .RegisterType<Splitter>()
-                .As<ISplitter>();
+                .RegisterType<WordExtractor>()
+                .As<IWordExtractor>();
 
             builder
                 .RegisterType<TextCleaner>()

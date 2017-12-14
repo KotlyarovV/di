@@ -3,7 +3,6 @@ using System.Drawing;
 using Moq;
 using NUnit.Framework;
 using TagsCloudVisualization;
-using YandexMystem.Wrapper.Models;
 
 namespace TagCloudVisualisation_Tests
 {
@@ -13,7 +12,7 @@ namespace TagCloudVisualisation_Tests
         private CloudPainter cloudPainter;
         private Mock<ICloudLayouter> cloudLayouterMock;
         private Mock<IFormatter> formatterMock;
-        private Mock<ISplitter> splitterMock;
+        private Mock<IWordExtractor> wordExtractorMock;
         private Mock<IFilter> filterMock;
         private Mock<IAnalysator> analysatorMock;
         private Mock<ITextVisualisator> textVisualisatorMock;
@@ -22,7 +21,7 @@ namespace TagCloudVisualisation_Tests
         [SetUp]
         public void SetUp()
         {
-            splitterMock = new Mock<ISplitter>();
+            wordExtractorMock = new Mock<IWordExtractor>();
             filterMock = new Mock<IFilter>();
             formatterMock = new Mock<IFormatter>();
             analysatorMock = new Mock<IAnalysator>();
@@ -31,7 +30,7 @@ namespace TagCloudVisualisation_Tests
             textCleanerMock = new Mock<ITextCleaner>();
 
             cloudPainter = new CloudPainter(
-                splitterMock.Object,
+                wordExtractorMock.Object,
                 formatterMock.Object,
                 filterMock.Object,
                 analysatorMock.Object,
@@ -50,10 +49,10 @@ namespace TagCloudVisualisation_Tests
                 .Setup(cleaner => cleaner.RemoveSigns(It.IsAny<string>()))
                 .Returns("один  два  три");
 
-            splitterMock.Setup(splitter => splitter.Split(It.IsAny<string>()));
-            filterMock.Setup(filter => filter.FilterWords(It.IsAny<IEnumerable<WordModel>>()));
+            wordExtractorMock.Setup(wordExtractor => wordExtractor.ExtractWords(It.IsAny<string>()));
+            filterMock.Setup(filter => filter.FilterWords(It.IsAny<IEnumerable<Word>>()));
             formatterMock
-                .Setup(formatter => formatter.FormatWords(It.IsAny<IEnumerable<WordModel>>()))
+                .Setup(formatter => formatter.FormatWords(It.IsAny<IEnumerable<Word>>()))
                 .Returns(words);
 
             analysatorMock.Setup(analysator => analysator.GetWeights(It.IsAny<IReadOnlyCollection<string>>()));
@@ -116,15 +115,15 @@ namespace TagCloudVisualisation_Tests
         public void GetBitmap_SplitterCalled()
         {
             GetMockedBitmap();
-            splitterMock
-                .Verify(splitter => splitter.Split(It.IsAny<string>()), Times.Once);
+            wordExtractorMock
+                .Verify(wordExtractor => wordExtractor.ExtractWords(It.IsAny<string>()), Times.Once);
         }
 
         [Test]
         public void GetBitmap_FilterCalled()
         {
             GetMockedBitmap();
-            filterMock.Verify(filter => filter.FilterWords(It.IsAny<IEnumerable<WordModel>>()));
+            filterMock.Verify(filter => filter.FilterWords(It.IsAny<IEnumerable<Word>>()));
         }
 
         [Test]
@@ -132,7 +131,7 @@ namespace TagCloudVisualisation_Tests
         {
             GetMockedBitmap();
             formatterMock
-                .Verify(formatter => formatter.FormatWords(It.IsAny<IEnumerable<WordModel>>()), Times.Once);
+                .Verify(formatter => formatter.FormatWords(It.IsAny<IEnumerable<Word>>()), Times.Once);
         }
 
         [Test]
