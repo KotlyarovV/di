@@ -33,6 +33,7 @@ namespace TagsCloudVisualizationLauncher
 
         public ImageFormat GetImageFormat()
         {
+            if (!ImageName.Contains(".")) return standartFormat;
             var format = ImageName
                 .Split('.')
                 .Last()
