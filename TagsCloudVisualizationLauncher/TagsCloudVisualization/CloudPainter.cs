@@ -53,7 +53,7 @@ namespace TagsCloudVisualization
             
             var stringImages = textVisualisator
                 .CreateTextImages(weights)
-                .SetFontSizes(maxFont, minFont)
+                .SetFontSizes(minFont, maxFont)
                 .SetColors()
                 .SetFontTipe(fontName)
                 .GetStringImages();
@@ -73,8 +73,9 @@ namespace TagsCloudVisualization
             var bitmap = new Bitmap(width, height);
             var graphics = Graphics.FromImage(bitmap);
             var textImages = GetStringImages(text, minFont, maxFont, fontName);
-            textImages = textImages.OrderBy(stringImage => -stringImage.Size.Width * stringImage.Size.Height);
-
+            textImages = textImages
+                .OrderBy(stringImage => -stringImage.Size.Width * stringImage.Size.Height);
+             
             var flags = TextFormatFlags.NoPadding | TextFormatFlags.NoClipping;
             foreach (var textImage in textImages)
             {

@@ -30,7 +30,7 @@ namespace TagsCloudVisualization
         }
 
 
-        public ITextVisualisator SetFontSizes(double maxFont, double minFont)
+        public ITextVisualisator SetFontSizes(double minFont, double maxFont)
         {
             if (weights.Count == 0) return this;
 
@@ -40,7 +40,7 @@ namespace TagsCloudVisualization
             foreach (var textImage in textImages)
             {
                 var fontSize = (weights[textImage.Text] > minWeight)
-                    ? maxFont * (weights[textImage.Text] - minWeight) / (maxWeight - minWeight) + minFont
+                    ? (maxFont - minFont) * (weights[textImage.Text] - minWeight) / (maxWeight - minWeight) + minFont
                     : minFont;
                 textImage.FontSize = (float) fontSize;
             }

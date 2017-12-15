@@ -81,6 +81,7 @@
     <Compile Include="SpiralShould.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TextCleanerShould.cs" />
+    <Compile Include="TextVisualisatorShould.cs" />
     <Compile Include="WordExtractorShould.cs" />
   </ItemGroup>
   <ItemGroup>
