@@ -9,7 +9,7 @@ namespace TagCloudVisualisation_Tests
     class FilterShould
     {
         private Filter filter;
-        private readonly GramPartsEnum[] excludedGramPart = new []
+        private readonly GramPartsEnum[] excludedGramPart =
         {
             GramPartsEnum.Conjunction,
             GramPartsEnum.NounPronoun,

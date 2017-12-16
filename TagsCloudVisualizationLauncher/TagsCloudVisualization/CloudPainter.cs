@@ -16,7 +16,7 @@ namespace TagsCloudVisualization
         private readonly ITextCleaner textCleaner;
 
         public CloudPainter(
-            IWordExtractor splitter,
+            IWordExtractor wordExtractor,
             IFormatter formatter,
             IFilter filter,
             IAnalysator lexicAnalysator,
@@ -28,7 +28,7 @@ namespace TagsCloudVisualization
             this.cloudLayouter = cloudLayouter;
             this.lexicAnalysator = lexicAnalysator;
             this.textVisualisator = textVisualisator;
-            this.wordExtractor = splitter;
+            this.wordExtractor = wordExtractor;
             this.formatter = formatter;
             this.filter = filter;
             this.textCleaner = textCleaner;

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
@@ -79,32 +77,28 @@ namespace TagsCloudVisualizationLauncher
 
         private void button1_Click(object sender, EventArgs e)
         {
-            try
+            GetParameters();
+            var container = ConteinerConfigurator.ConfigureContainer(parameters);
+            var cloudPainter = container.Resolve<ICloudPainter>();
+            var inputStream = container.ResolveNamed<Stream>(ConteinerConfigurator.InputStreamName);
+
+            string text;
+            using (var reader = new StreamReader(inputStream, Encoding.Default))
             {
-                GetParameters();
-                var container = ConteinerConfigurator.ConfigureContainer(parameters);
-                var cloudPainter = container.Resolve<ICloudPainter>();
-                var inputStream = container.ResolveNamed<Stream>(ConteinerConfigurator.InputStreamName);
-
-                string text;
-                using (var reader = new StreamReader(inputStream, Encoding.Default))
-                {
-                    text = reader.ReadToEnd();
-                }
-
-                var bitmap = cloudPainter.GetBitmap(
-                    text,
-                    parameters.Width,
-                    parameters.Height,
-                    parameters.FontSizeMin,
-                    parameters.FontSizeMax
-                );
-
-                var outStream = container.ResolveNamed<Stream>(ConteinerConfigurator.OutStreamName);
-                var imageFormat = parameters.GetImageFormat();
-                bitmap.Save(outStream, imageFormat);
+                text = reader.ReadToEnd();
             }
-            catch { }
+
+            var bitmap = cloudPainter.GetBitmap(
+                text,
+                parameters.Width,
+                parameters.Height,
+                parameters.FontSizeMin,
+                parameters.FontSizeMax
+            );
+
+            var outStream = container.ResolveNamed<Stream>(ConteinerConfigurator.OutStreamName);
+            var imageFormat = parameters.GetImageFormat();
+            bitmap.Save(outStream, imageFormat);
         }
 
         private void label6_Click(object sender, EventArgs e)

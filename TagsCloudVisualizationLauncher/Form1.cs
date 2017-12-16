@@ -12,7 +12,7 @@ namespace TagsCloudVisualizationLauncher
             InitializeComponent();
             Size = bitmap.Size;
             this.bitmap = bitmap;
-            Paint += new System.Windows.Forms.PaintEventHandler(Form1_Paint);
+            Paint += Form1_Paint;
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)

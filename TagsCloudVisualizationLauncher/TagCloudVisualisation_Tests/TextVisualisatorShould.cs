@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
 using TagsCloudVisualization;
@@ -15,7 +13,7 @@ namespace TagCloudVisualisation_Tests
     {
         private TextVisualisator textVisualisator;
 
-        private readonly Color[] colors = new[]
+        private readonly Color[] colors =
         {
             Color.Chartreuse,
             Color.Blue, 
@@ -47,7 +45,7 @@ namespace TagCloudVisualisation_Tests
                 10F,
                 (float) (10 * 0.1 / 0.3 + 10),
                 (float) (10 * 0.2 / 0.3 + 10),
-                (float) (10 * 1 + 10),
+                10 * 1 + 10
             };
 
             var fontSizes = textVisualisator
@@ -82,12 +80,12 @@ namespace TagCloudVisualisation_Tests
                 Color.Chartreuse,
             };
 
-            var colors = textVisualisator
+            var colorsOfText = textVisualisator
                 .GetStringImages()
                 .Select(textImage => textImage.Color)
                 .ToArray();
 
-            colors.Should().Equal(expectedColors);
+            colorsOfText.Should().Equal(expectedColors);
         }
 
     }
