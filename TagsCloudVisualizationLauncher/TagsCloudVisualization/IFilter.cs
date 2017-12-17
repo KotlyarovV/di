@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace TagsCloudVisualization
+﻿namespace TagsCloudVisualization
 {
     public interface IFilter
     {
-        IEnumerable<Word> FilterWords(IEnumerable<Word> words);
+        bool IsNecessaryPartOfSpeech(Word word);
     }
 }

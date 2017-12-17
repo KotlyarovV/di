@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using System.Collections;
+using System.Linq;
+using FluentAssertions;
 using NUnit.Framework;
 using TagsCloudVisualization;
 using YandexMystem.Wrapper.Enums;
@@ -16,39 +18,45 @@ namespace TagCloudVisualisation_Tests
             formatter = new Formatter();
         }
 
-        [Test]
-        public void FormatWords_FormatToInitialForm()
+        [TestCaseSource(typeof(DataClass), nameof(DataClass.FormatToInitialForm))]
+        [TestCaseSource(typeof(DataClass), nameof(DataClass.FormatToLowerCase))]
+        public string FormatWordsTest(Word word)
         {
-            var words = new[]
-            {
-                new Word("человека", "человек", GramPartsEnum.Noun),
-                new Word("большого", "большой", GramPartsEnum.Adjective),
-                new Word("ходили", "ходить", GramPartsEnum.Verb)
-            };
-
-            var expectedFilteredWords = new[]
-            {
-                "человек", "большой", "ходить"
-            };
-            formatter.FormatWords(words).Should().Equal(expectedFilteredWords);
+            return formatter.GetOriginal(word);
         }
 
-        [Test]
-        public void FormatWords_FormatToLowerCase()
+        private class DataClass
         {
-            var words = new[]
+            public static IEnumerable FormatToLowerCase()
             {
-                new Word("ЧеЛовеК", "человек", GramPartsEnum.Noun),
-                new Word("БольШой", "большой", GramPartsEnum.Adjective),
-                new Word("ХОДИть", "ходить", GramPartsEnum.Verb)
-            };
+                yield return new TestCaseData(new Word("Человек", "человек", GramPartsEnum.Noun))
+                    .Returns("человек")
+                    .SetName("Starts_From_Upper_Case");
 
-            var expectedFilteredWords = new[]
+                yield return new TestCaseData(new Word("большоЙ", "большой", GramPartsEnum.Adjective))
+                    .Returns("большой")
+                    .SetName("Ends_With_Upper_Case");
+
+                yield return new TestCaseData(new Word("ХОДИТЬ", "ходить", GramPartsEnum.Verb))
+                    .Returns("ходить")
+                    .SetName("All_Is_UpperCase");
+            }
+
+            public static IEnumerable FormatToInitialForm()
             {
-                "человек", "большой", "ходить"
-            };
-            formatter.FormatWords(words).Should().Equal(expectedFilteredWords);
+                yield return new TestCaseData(new Word("человека", "человек", GramPartsEnum.Noun))
+                    .Returns("человек")
+                    .SetName("Noun_To_Initial_Form");
+
+                yield return new TestCaseData(new Word("большого", "большой", GramPartsEnum.Adjective))
+                    .Returns("большой")
+                    .SetName("Adjective_To_Initial_Form");
+
+                yield return new TestCaseData(new Word("ходил", "ходить", GramPartsEnum.Verb))
+                    .Returns("ходить")
+                    .SetName("Verb_To_Initial_Form");
+            }
         }
-
     }
+    
 }

@@ -78,5 +78,40 @@ namespace TagCloudVisualisation_Tests
 
             analysator.GetWeights(words).Should().Equal(expectedWeights);
         }
+
+        [Test]
+        public void GetWeights_GetWeightOfRepeatedWords()
+        {
+            var words = new[]
+            {
+                "один",
+                "один",
+                "один",
+                "один",
+            };
+
+            var expectedWeights = new Dictionary<string, double>()
+            {
+                {"один", 1},
+            };
+
+            analysator.GetWeights(words).Should().Equal(expectedWeights);
+        }
+
+        [Test]
+        public void GetWeights_GetWeightOfOneWords()
+        {
+            var words = new[]
+            {
+                "один"
+            };
+
+            var expectedWeights = new Dictionary<string, double>()
+            {
+                {"один", 1},
+            };
+
+            analysator.GetWeights(words).Should().Equal(expectedWeights);
+        }
     }
 }

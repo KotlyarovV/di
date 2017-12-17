@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace TagsCloudVisualization
+﻿namespace TagsCloudVisualization
 {
     public interface IFormatter
     {
-        IEnumerable<string> FormatWords(IEnumerable<Word> words);
+        string GetOriginal(Word word);
     }
 }

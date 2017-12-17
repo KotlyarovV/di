@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using System.Collections;
+using System.Linq;
+using FluentAssertions;
 using NUnit.Framework;
 using TagsCloudVisualization;
 using YandexMystem.Wrapper.Enums;
@@ -24,52 +26,55 @@ namespace TagCloudVisualisation_Tests
             filter = new Filter(excludedGramPart);
         }
 
-
-        [Test]
-        public void FilterWords_ExcludeByGramParts()
+        [TestCaseSource(typeof(DataClass), nameof(DataClass.DefineNotNeededGramParts))]
+        [TestCaseSource(typeof(DataClass), nameof(DataClass.NotExcludeSimpleWords))]
+        [TestCaseSource(typeof(DataClass), nameof(DataClass.ExcludeUnmeaning))]
+        public bool FilterWordsTest(Word word)
         {
-            var words = new[]
-            {
-                new Word("один", "один", GramPartsEnum.Numeral),
-                new Word("и", "и", GramPartsEnum.Conjunction),
-                new Word("четыре", "четыре", GramPartsEnum.Numeral),
-                new Word("снег", "снег", GramPartsEnum.Noun),
-                new Word("он", "он", GramPartsEnum.NounPronoun),
-                new Word("в", "в", GramPartsEnum.Pretext),
-            };
-
-            var expectedFilteredWords = new[]
-            {
-                new Word("один", "один", GramPartsEnum.Numeral),
-                new Word("четыре", "четыре", GramPartsEnum.Numeral),
-                new Word("снег", "снег", GramPartsEnum.Noun),
-            };
-
-            filter.FilterWords(words).Should().Equal(expectedFilteredWords);
+            return filter.IsNecessaryPartOfSpeech(word);
         }
 
-        [Test]
-        public void FilterWords_ExcludeUnmeaning()
+        private class DataClass
         {
-            var words = new[]
+            public static IEnumerable DefineNotNeededGramParts()
             {
-                new Word("один", "один", GramPartsEnum.Numeral),
-                new Word("ааыы"),
-                new Word("четыре", "четыре", GramPartsEnum.Numeral),
-                new Word("шгрхф"),
-                new Word("снег", "снег", GramPartsEnum.Noun),
-                new Word("шгрхф")
-            };
+                yield return new TestCaseData(new Word("и", "и", GramPartsEnum.Conjunction))
+                    .Returns(false)
+                    .SetName("Exclude_Conjuction");
 
-            var expectedFilteredWords = new[]
+                yield return new TestCaseData(new Word("он", "он", GramPartsEnum.NounPronoun))
+                    .Returns(false)
+                    .SetName("Exclude_NounProNoun");
+
+                yield return new TestCaseData(new Word("в", "в", GramPartsEnum.Pretext))
+                    .Returns(false)
+                    .SetName("Exclude_Pretext");
+            }
+
+            public static IEnumerable ExcludeUnmeaning()
             {
-                new Word("один", "один", GramPartsEnum.Numeral),
-                new Word("четыре", "четыре", GramPartsEnum.Numeral),
-                new Word("снег", "снег", GramPartsEnum.Noun),
-            };
+                yield return new TestCaseData(new Word("ааыы"))
+                    .Returns(false)
+                    .SetName("Exclude_Unmeaning_Word");
+            }
 
-            filter.FilterWords(words).Should().Equal(expectedFilteredWords);
+            public static IEnumerable NotExcludeSimpleWords()
+            {
+                yield return new TestCaseData(new Word("один", "один", GramPartsEnum.Numeral))
+                    .Returns(true)
+                    .SetName("Not_Exclude_Numeral");
+
+                yield return new TestCaseData(new Word("снег", "снег", GramPartsEnum.Noun))
+                    .Returns(true)
+                    .SetName("Not_Exclude_Noun");
+
+                yield return new TestCaseData(new Word("большой", "большой", GramPartsEnum.Adjective))
+                    .Returns(true)
+                    .SetName("Not_Exclude_Adjective");
+            }
         }
 
     }
+
+    
 }

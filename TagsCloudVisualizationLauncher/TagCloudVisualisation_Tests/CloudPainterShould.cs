@@ -3,6 +3,7 @@ using System.Drawing;
 using Moq;
 using NUnit.Framework;
 using TagsCloudVisualization;
+using YandexMystem.Wrapper.Enums;
 
 namespace TagCloudVisualisation_Tests
 {
@@ -43,17 +44,35 @@ namespace TagCloudVisualisation_Tests
         private void GetMockedBitmap()
         {
             var text = "один, два, три";
-            var words = new[] {"один", "два", "три"};
+            var stringWords = new[] {"один", "два", "три"};
+            var wordsEnumerator = stringWords.GetEnumerator();
+
+            var words = new[]
+            {
+                new Word("один", "один", GramPartsEnum.Numeral),
+                new Word("два", "два", GramPartsEnum.Numeral),
+                new Word("три", "три", GramPartsEnum.Numeral),
+            };
 
             textCleanerMock
                 .Setup(cleaner => cleaner.RemoveSigns(It.IsAny<string>()))
                 .Returns("один  два  три");
 
-            wordExtractorMock.Setup(wordExtractor => wordExtractor.ExtractWords(It.IsAny<string>()));
-            filterMock.Setup(filter => filter.FilterWords(It.IsAny<IEnumerable<Word>>()));
-            formatterMock
-                .Setup(formatter => formatter.FormatWords(It.IsAny<IEnumerable<Word>>()))
+            wordExtractorMock
+                .Setup(wordExtractor => wordExtractor.ExtractWords(It.IsAny<string>()))
                 .Returns(words);
+            
+            filterMock
+                .Setup(filter => filter.IsNecessaryPartOfSpeech(It.IsAny<Word>()))
+                .Returns(true);
+
+            formatterMock
+                .Setup(formatter => formatter.GetOriginal(It.IsAny<Word>()))
+                .Returns(() =>
+                {
+                    wordsEnumerator.MoveNext();
+                    return wordsEnumerator.Current.ToString();
+                });
 
             analysatorMock.Setup(analysator => analysator.GetWeights(It.IsAny<IReadOnlyCollection<string>>()));
 
@@ -123,7 +142,7 @@ namespace TagCloudVisualisation_Tests
         public void GetBitmap_FilterCalled()
         {
             GetMockedBitmap();
-            filterMock.Verify(filter => filter.FilterWords(It.IsAny<IEnumerable<Word>>()));
+            filterMock.Verify(filter => filter.IsNecessaryPartOfSpeech(It.IsAny<Word>()), Times.AtLeastOnce);
         }
 
         [Test]
@@ -131,7 +150,7 @@ namespace TagCloudVisualisation_Tests
         {
             GetMockedBitmap();
             formatterMock
-                .Verify(formatter => formatter.FormatWords(It.IsAny<IEnumerable<Word>>()), Times.Once);
+                .Verify(formatter => formatter.GetOriginal(It.IsAny<Word>()), Times.AtLeastOnce);
         }
 
         [Test]

@@ -14,15 +14,10 @@ namespace TagsCloudVisualization
             this.excludedGramParts = excludedGramParts;
         }
 
-        private bool IsRightWord(Word word)
+        public bool IsNecessaryPartOfSpeech(Word word)
         {
             if (word.InitialForm == null || word.GramPart == null) return false;
             return !excludedGramParts.Contains(word.GramPart.GetValueOrDefault());
-        }
-
-        public IEnumerable<Word> FilterWords(IEnumerable<Word> words)
-        {
-            return words.Where(IsRightWord);
         }
     }
 }

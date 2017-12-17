@@ -42,14 +42,14 @@ namespace TagsCloudVisualization
             )
         {
             var textWithoutSigns = textCleaner.RemoveSigns(text);
-            var words = wordExtractor.ExtractWords(textWithoutSigns);
-            var filteredWords = filter.FilterWords(words);
 
-            var formattedWords = formatter
-                .FormatWords(filteredWords)
+            var words = wordExtractor
+                .ExtractWords(textWithoutSigns)
+                .Where(filter.IsNecessaryPartOfSpeech)
+                .Select(formatter.GetOriginal)
                 .ToArray();
 
-            var weights = lexicAnalysator.GetWeights(formattedWords);
+            var weights = lexicAnalysator.GetWeights(words);
             
             var stringImages = textVisualisator
                 .CreateTextImages(weights)
