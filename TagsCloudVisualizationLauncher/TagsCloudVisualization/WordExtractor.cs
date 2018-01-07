@@ -7,7 +7,7 @@ namespace TagsCloudVisualization
     {
         public Result<Word[]> ExtractWords(string text)
         {
-            Mysteam mysteam = new Mysteam();
+            Mysteam mysteam = null;
 
             var mysreamInitialization = Result.Of(() => mysteam = new Mysteam());
             if (!mysreamInitialization.IsSuccess)
