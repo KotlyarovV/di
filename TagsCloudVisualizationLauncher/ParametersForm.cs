@@ -1,8 +1,16 @@
 ﻿using System;
 using System.Windows.Forms;
+using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationLauncher
 {
+    enum Regim
+    {
+        Show,
+        Save
+    }
+
+
     public partial class ParametersForm : Form
     {
         private readonly Parameters parameters;
@@ -33,20 +41,36 @@ namespace TagsCloudVisualizationLauncher
         }
 
 
-        private void GetParameters()
+        private Result<Parameters> GetParametersResult(Regim regim)
         {
-            parameters.Width = int.Parse(height.Text);
-            parameters.Height = int.Parse(width.Text);
+            if (fileinput.TextLength == 0 || (regim == Regim.Save && outputfile.TextLength == 0))
+                return Result.Fail<Parameters>("One or more parameters was missed!");
+
             parameters.FileName = fileinput.Text;
-            parameters.FontSizeMax = double.Parse(maxfontsize.Text);
-            parameters.FontSizeMin = double.Parse(minfontsize.Text);
-            parameters.ImageName = outputfile.Text;
+
+            var digitParseResult = Result
+                .Of(() => parameters.Width = int.Parse(height.Text))
+                .Then(x => parameters.Height = int.Parse(width.Text))
+                .Then(x => parameters.FontSizeMax = double.Parse(maxfontsize.Text))
+                .Then(x => parameters.FontSizeMin = double.Parse(minfontsize.Text))
+                .ReplaceError((str) => "Digits parameters was written incorrect!");
+            
+            return new Result<Parameters>(digitParseResult.Error, parameters);
+            
+            
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             
-            GetParameters();
+            var parametersResult = GetParametersResult(Regim.Show);
+
+            if (!parametersResult.IsSuccess)
+            {
+                errorMessage.Text = parametersResult.Error;
+                return;
+            }
+
             var cloudBuilder = new CloudBuilder();
             var bitmapResult = cloudBuilder.TryBuildCloud(parameters);
             if (!bitmapResult.IsSuccess)
@@ -64,8 +88,14 @@ namespace TagsCloudVisualizationLauncher
 
         private void button1_Click(object sender, EventArgs e)
         {
-            GetParameters();
+            var parametersResult = GetParametersResult(Regim.Save);
             
+            if (!parametersResult.IsSuccess)
+            {
+                errorMessage.Text = parametersResult.Error;
+                return;
+            }
+
             var cloudBuilder = new CloudBuilder();
             var bitmapResult = cloudBuilder.TryBuildCloud(parameters);
             
