@@ -26,7 +26,7 @@ namespace TagsCloudVisualization
                     pointEnumerator.MoveNext();
                     point = BalancePoint(pointEnumerator.Current);
 
-                } while (rectangles.ContainPoint(point) &&
+                } while (rectangles.ContainPoint(point) ||
                          rectangles.IntersectRectangle(new Rectangle(point, size)));
 
                 rectangles.Add(new Rectangle(point, size));
