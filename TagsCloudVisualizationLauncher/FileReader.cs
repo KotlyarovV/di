@@ -4,7 +4,7 @@ using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationLauncher
 {
-    public class FileReader
+    internal class FileReader
     {
         public Result<string> GetText(string fileName)
         {

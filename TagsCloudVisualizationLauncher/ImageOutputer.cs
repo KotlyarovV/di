@@ -4,7 +4,7 @@ using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationLauncher
 {
-    class ImageOutputer
+    internal class ImageOutputer
     {
         public Result<None> SaveImage(
             Result<Parameters> parametersResult, 

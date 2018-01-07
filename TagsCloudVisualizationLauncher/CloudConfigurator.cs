@@ -7,7 +7,7 @@ using YandexMystem.Wrapper.Enums;
 
 namespace TagsCloudVisualizationLauncher
 {
-    public static class CloudConfigurator
+    internal static class CloudConfigurator
     {
         public static CloudPainter ConfigureCloud(Parameters parameters)
         {

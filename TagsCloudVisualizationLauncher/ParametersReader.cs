@@ -3,7 +3,7 @@ using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationLauncher
 {
-    class ParametersReader
+    internal class ParametersReader
     {
         public Result<Parameters> ParseParameters(string[] parameters)
         {

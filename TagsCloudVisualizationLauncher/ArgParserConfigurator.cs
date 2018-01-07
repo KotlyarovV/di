@@ -3,7 +3,7 @@ using Fclp;
 
 namespace TagsCloudVisualizationLauncher
 {
-    static class ArgParserConfigurator
+    internal static class ArgParserConfigurator
     {
         //Tagscloudvisualization.exe --wh 3000 --ht 3000 --filename text.txt --fontmin 20 --fontmax 50 --imagename cloud.png
         public static void ArgParserConfigurate(IFluentCommandLineParser<Parameters> parser)

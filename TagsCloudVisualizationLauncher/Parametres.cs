@@ -6,7 +6,7 @@ using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationLauncher
 {
-    public class Parameters
+    internal class Parameters
     {
         private static readonly Dictionary<string, ImageFormat> imageFormats = new Dictionary<string, ImageFormat>()
         {

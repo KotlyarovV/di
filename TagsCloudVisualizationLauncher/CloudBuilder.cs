@@ -3,7 +3,7 @@ using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationLauncher
 {
-    class CloudBuilder
+    internal class CloudBuilder
     {
         public Result<Bitmap> TryBuildCloud(Result<Parameters> parametersResult)
         {
