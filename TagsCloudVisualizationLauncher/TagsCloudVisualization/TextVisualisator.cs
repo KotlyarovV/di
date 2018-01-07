@@ -7,32 +7,32 @@ namespace TagsCloudVisualization
 {
     public class TextVisualisator : ITextVisualisator
     {
-        private List<TextImage> textImages;
+        private TextImage[] textImages;
         private Dictionary<string, double> weights;
         private readonly Color[] colors;
 
         public TextVisualisator(Color[] colors)
         {
             this.colors = colors;
-            weights = new Dictionary<string, double>();
-            textImages = new List<TextImage>();
         }
 
         public Result<ITextVisualisator> CreateTextImages(Dictionary<string, double> weights)
         {
-            var textImages = new TextImage[weights.Count];
+            this.weights = weights;
+            textImages = new TextImage[weights.Count];
             var i = 0;
             foreach (var weight in weights)
             {
                 textImages[i] = new TextImage(weight.Key);
+                i++;
             }
-            return Result.Ok((ITextVisualisator)this);
+            return Result.Ok((ITextVisualisator) this);
         }
 
 
         public Result<ITextVisualisator> SetFontSizes(double minFont, double maxFont)
         {
-            if (weights.Count == 0)
+            if (textImages.Length == 0)
                 return Result.Fail<ITextVisualisator>("There was no words.");
 
             if (minFont <= 0 || maxFont <= 0)
@@ -67,7 +67,7 @@ namespace TagsCloudVisualization
         
         public Result<ITextVisualisator> SetColors()
         {
-            for (var i = 0; i < textImages.Count; i++)
+            for (var i = 0; i < textImages.Length; i++)
             {
                 textImages[i].Color = colors[i % colors.Length];
             }
@@ -86,6 +86,6 @@ namespace TagsCloudVisualization
                 textImage.Size = size;
             }
             return Result.Ok(textImages.ToArray());
-        }
+        }        
     }
 }
