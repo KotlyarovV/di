@@ -7,15 +7,10 @@ namespace TagsCloudVisualization
         public Size Size { get; set; }
         public readonly string Text;
         public Color Color { get; set; }
-        private FontStyle style = FontStyle.Regular;
+        public FontStyle Style { get; } = FontStyle.Regular;
         public float FontSize { get; set; }
-        public string FontType { get; set; }
 
-        public Font Font => new Font(FontType, FontSize, style);
-
-        public TextImage(string text)
-        {
-            Text = text;
-        }
+        public Font Font { get; set; }
+        public TextImage(string text) => Text = text;   
     }
 }

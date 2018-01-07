@@ -1,15 +1,24 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using YandexMystem.Wrapper;
+using YandexMystem.Wrapper.Models;
 
 namespace TagsCloudVisualization
 {
-    public class WordExtractor : Mysteam, IWordExtractor
+    public class WordExtractor
     {
-        public IEnumerable<Word> ExtractWords(string text)
+        public Result<Word[]> ExtractWords(string text)
         {
-            return GetWords(text)
-                .Select(wordModel => new Word(wordModel));
+            Mysteam mysteam = new Mysteam();
+
+            var mysreamInitialization = Result.Of(() => mysteam = new Mysteam());
+            if (!mysreamInitialization.IsSuccess)
+                return Result.Fail<Word[]>("Can't find mystem.exe for yandex library");            
+
+            return Result.Of(() => mysteam.GetWords(text)
+                    .Select(wordModel => new Word(wordModel))
+                    .ToArray()
+                ).ReplaceError(error => "Yandex libtaty can't handle text.");
         }
     }
 }

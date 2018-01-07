@@ -1,15 +1,8 @@
 ﻿namespace TagsCloudVisualization
 {
-    public class TextCleaner : ITextCleaner
+    public class TextCleaner
     {
-        private readonly char[] replacedChars;
-
-        public TextCleaner(char[] replacedChars)
-        {
-            this.replacedChars = replacedChars;
-        }
-
-        public string RemoveSigns(string text)
+        public string RemoveSigns(char[] replacedChars, string text)
         {
             foreach (var replacedChar in replacedChars)
             {

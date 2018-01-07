@@ -1,10 +1,6 @@
 ﻿using System;
-using System.IO;
-using System.Text;
 using System.Windows.Forms;
-using Autofac;
-using Fclp;
-using TagsCloudVisualization;
+
 
 namespace TagsCloudVisualizationLauncher
 {
@@ -21,44 +17,46 @@ namespace TagsCloudVisualizationLauncher
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
                 Application.Run(new ParametersForm());
-            }
-
+            }            
             else
             {
-                var parser = new FluentCommandLineParser<Parameters>();
-                ArgParserConfigurator.ArgParserConfigurate(parser);
-                var result = parser.Parse(args);
-
-                if (result.HasErrors)
+                if (args.Length == 2 && args[0] == "--conf")
                 {
-                    Console.WriteLine("One of the parameters was missed!");
+                    var fileReader = new FileReader();
+                    var configResult = fileReader.GetText(args[1]);
+                    if (!configResult.IsSuccess)
+                    {
+                        Console.WriteLine(configResult.Error);
+                        return;
+                    }
+                    args = configResult.GetValueOrThrow().Split();
+                }
+
+                var parametersReader = new ParametersReader();
+                var paramsResult = parametersReader.ParseParameters(args);
+                
+                var cloudBuilder = new CloudBuilder();
+                var bitmapResult = cloudBuilder.TryBuildCloud(paramsResult);
+
+                if (!bitmapResult.IsSuccess)
+                {                   
+                   Console.WriteLine(bitmapResult.Error);
+                   return;                   
+                }
+
+                var outPuter = new ImageOutputer();
+                var saveResult = outPuter.SaveImage(
+                        paramsResult.GetValueOrThrow(), 
+                        bitmapResult.GetValueOrThrow()
+                        );
+
+                if (!saveResult.IsSuccess)
+                {
+                    Console.WriteLine(saveResult.Error);
                     return;
                 }
-                if (result.EmptyArgs || result.HelpCalled) return;
 
-                var parametrs = parser.Object;
-                var container = ConteinerConfigurator.ConfigureContainer(parametrs);
-                var cloudPainter = container.Resolve<ICloudPainter>();
-
-                var inputStream = container.ResolveNamed<Stream>(ConteinerConfigurator.InputStreamName);
-                string text;
-
-                using (var reader = new StreamReader(inputStream, Encoding.Default))
-                {
-                    text = reader.ReadToEnd();
-                }
-                
-                var bitmap = cloudPainter.GetBitmap(
-                    text,
-                    parametrs.Width,
-                    parametrs.Height,
-                    parametrs.FontSizeMin,
-                    parametrs.FontSizeMax
-                    );
-
-                var outStream = container.ResolveNamed<Stream>(ConteinerConfigurator.OutStreamName);
-                var imageFormat = parametrs.GetImageFormat();
-                bitmap.Save(outStream, imageFormat);
+                Console.WriteLine("File was saved");
             }
         }
     }

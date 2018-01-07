@@ -19,7 +19,10 @@ namespace TagCloudVisualisation_Tests
         private void CheckWords(string words, IEnumerable<Word> expectedExtractedWords)
         {
             var exctractedWords = wordExtractor.ExtractWords(words);
-            exctractedWords.Should().Equal(expectedExtractedWords);
+            exctractedWords
+                .GetValueOrThrow()
+                .Should()
+                .Equal(expectedExtractedWords);
         }
 
         [Test]

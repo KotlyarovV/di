@@ -50,6 +50,7 @@ namespace TagCloudVisualisation_Tests
 
             var fontSizes = textVisualisator
                 .GetStringImages()
+                .GetValueOrThrow()
                 .Select(textImage => textImage.FontSize)
                 .ToArray();
             expectedFontSizes.Should().Equal(fontSizes, (size1, size2) => Math.Abs(size1 - size2) < 0.00001);
@@ -62,7 +63,11 @@ namespace TagCloudVisualisation_Tests
             textVisualisator.SetFontSizes(10, 20);
             textVisualisator.SetFontTipe("Times New Roman");
 
-            textVisualisator.GetStringImages().Should().OnlyContain(x => x.FontType == "Times New Roman");
+            textVisualisator
+                .GetStringImages()
+                .GetValueOrThrow()
+                .Should()
+                .OnlyContain(x => x.Font.Name == "Times New Roman");
         }
 
         [Test]
@@ -82,6 +87,7 @@ namespace TagCloudVisualisation_Tests
 
             var colorsOfText = textVisualisator
                 .GetStringImages()
+                .GetValueOrThrow()
                 .Select(textImage => textImage.Color)
                 .ToArray();
 

@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
+using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationLauncher
 {
@@ -19,8 +20,7 @@ namespace TagsCloudVisualizationLauncher
             { "wmf", ImageFormat.Wmf }
         };
 
-        private static readonly ImageFormat standartFormat = ImageFormat.Png;
-
+        
         public int Width { get; set; }
         public int Height { get; set; }
 
@@ -31,15 +31,17 @@ namespace TagsCloudVisualizationLauncher
         public string FontName { get; set; }
         public string ImageName { get; set; }
 
-        public ImageFormat GetImageFormat()
+        public Result<ImageFormat> GetImageFormat()
         {
-            if (!ImageName.Contains(".")) return standartFormat;
             var format = ImageName
                 .Split('.')
                 .Last()
                 .ToLower();
 
-            return (imageFormats.ContainsKey(format)) ? imageFormats[format] : standartFormat;
+
+            return (imageFormats.ContainsKey(format) && ImageName.Contains(".")) ? 
+                Result.Ok(imageFormats[format]) : 
+                Result.Fail<ImageFormat>("Can't define image format");
         }
     }
 }

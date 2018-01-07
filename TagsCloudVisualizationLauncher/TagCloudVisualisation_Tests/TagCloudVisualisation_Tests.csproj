@@ -75,7 +75,6 @@
   <ItemGroup>
     <Compile Include="AnalysatorShould.cs" />
     <Compile Include="CircularCloudLayouterShould.cs" />
-    <Compile Include="CloudPainterShould.cs" />
     <Compile Include="FilterShould.cs" />
     <Compile Include="FormatterShould.cs" />
     <Compile Include="SpiralShould.cs" />

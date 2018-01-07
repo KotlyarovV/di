@@ -1,6 +1,6 @@
 ﻿namespace TagsCloudVisualization
 {
-    public class Formatter : IFormatter
+    public class Formatter
     {
         public string GetOriginal(Word word)
         {

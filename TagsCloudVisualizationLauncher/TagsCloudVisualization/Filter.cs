@@ -5,16 +5,9 @@ using YandexMystem.Wrapper.Enums;
 
 namespace TagsCloudVisualization
 {
-    public class Filter : IFilter
+    public class Filter
     {
-        private readonly GramPartsEnum[] excludedGramParts;
-
-        public Filter(GramPartsEnum[] excludedGramParts)
-        {
-            this.excludedGramParts = excludedGramParts;
-        }
-
-        public bool IsNecessaryPartOfSpeech(Word word)
+        public bool IsNecessaryPartOfSpeech(GramPartsEnum[] excludedGramParts, Word word)
         {
             if (word.InitialForm == null || word.GramPart == null) return false;
             return !excludedGramParts.Contains(word.GramPart.GetValueOrDefault());

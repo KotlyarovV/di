@@ -19,7 +19,7 @@ namespace TagCloudVisualisation_Tests
         public void SetUp()
         {
             startPoint = new Point(1, 1);
-            spiral = new ArchimedeanSpiral(startPoint, AngleStep, spiralRadius);
+            spiral = new ArchimedeanSpiral();
         }
 
 
@@ -32,19 +32,28 @@ namespace TagCloudVisualisation_Tests
         [TestCase(100)]
         public void CheckSpiralPoints_MustBeCorrectlyDefined(int numberOfPoints)
         {
+
+            var spiralPointsEnumerator = spiral
+                .GetSpiralPoints(startPoint, AngleStep, spiralRadius)
+                .GetEnumerator();
+
+            spiralPointsEnumerator.MoveNext();
+
             spiralAngle = 0;
             for (var i = 0; i < numberOfPoints; i++)
             {
 
                 spiralAngle += AngleStep;
-                var spiralPoint = spiral.GetPoint();
+                var spiralPoint = spiralPointsEnumerator.Current;
                 spiralPoint = new PointF(spiralPoint.X - startPoint.X, spiralPoint.Y - startPoint.Y);
                 
                 var sumXYSquares = Math.Pow(spiralPoint.X, 2) + Math.Pow(spiralPoint.Y, 2);
                 var radiusAndAngleSquare = Math.Pow(spiralAngle * spiralRadius, 2);
 
                 Math.Abs(sumXYSquares - radiusAndAngleSquare).Should().BeLessThan(0.00001);
+                spiralPointsEnumerator.MoveNext();
             }
+            spiralPointsEnumerator.Dispose();
         }
         
     }

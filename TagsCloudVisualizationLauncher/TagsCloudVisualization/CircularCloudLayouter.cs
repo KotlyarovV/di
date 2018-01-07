@@ -1,57 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudLayouter : ICloudLayouter
-    {
-        private readonly List<Rectangle> rectangles;
-        private readonly ISpiral spiral;
-        
-        public CircularCloudLayouter(ISpiral spiral)
-        {
-            this.spiral = spiral;
-            rectangles = new List<Rectangle>();
-        }
-
+    public class CircularCloudLayouter
+    {      
         private Point BalancePoint(PointF point) =>
             new Point((int)Math.Floor(point.X), (int)Math.Ceiling(point.Y));
 
-
-        private Point ChoosePoint()
+        public IEnumerable<Rectangle> GetCloudRectangles(
+            IEnumerable<Size> sizes,
+            Func<IEnumerable<PointF>> getSpiralPoints
+            )
         {
-            Point point;
-            do
+            var pointEnumerator = getSpiralPoints().GetEnumerator();
+            var rectangles = new List<Rectangle>();
+            foreach (var size in sizes)
             {
-                var pointOnSpiral = spiral.GetPoint();
-                point = BalancePoint(pointOnSpiral);
-            }
-            while (rectangles.ContainPoint(point));
-            return point;
-        }
+                Point point;
+                do
+                {
+                    pointEnumerator.MoveNext();
+                    point = BalancePoint(pointEnumerator.Current);
 
-        private Rectangle ChooseRectangle(Size size, Point point)
-        {
-            var rectangle = new Rectangle(point, size);
-            while (rectangles.IntersectRectangle(rectangle))
-            {
-                point = ChoosePoint();
-                rectangle = new Rectangle(point, size);
-            }
-            return rectangle;
-        }
-        
-        public Rectangle PutNextRectangle(Size rectangleSize)
-        {
-            if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0) 
-                throw new ArgumentException("Size have to be positive non zero number!");
+                } while (rectangles.ContainPoint(point) &&
+                         rectangles.IntersectRectangle(new Rectangle(point, size)));
 
-            var point = ChoosePoint();
-            var rectangle = ChooseRectangle(rectangleSize, point);
-            rectangles.Add(rectangle);
-            return rectangle;
-        }        
+                rectangles.Add(new Rectangle(point, size));
+                yield return rectangles.Last();
+            }
+            pointEnumerator.Dispose();
+        }
     }
 }

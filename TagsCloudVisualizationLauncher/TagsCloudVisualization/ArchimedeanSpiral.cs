@@ -1,34 +1,35 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    public class ArchimedeanSpiral : ISpiral
+    public class ArchimedeanSpiral
     {
         /*
-         * Realization of http://hijos.ru/2011/03/09/arximedova-spiral/ formulas
+        * Realization of http://hijos.ru/2011/03/09/arximedova-spiral/ formulas
         */
 
-        private readonly double spiralRadius;
-        private Point center;
-        private readonly double angleStep;
-        private double spiralAngle;
-
-        public ArchimedeanSpiral(Point center, double angleStep = 0.01, double spiralRadius = 1)
+        
+        public IEnumerable<PointF> GetSpiralPoints(
+            Point center,
+            double spiralRadius = 1,
+            double angleStep = 0.1
+        )
         {
-            this.angleStep = angleStep;
-            this.center = center;
-            this.spiralRadius = spiralRadius;
+            var spiralAngle = 0.0;
+
+            while (true)
+            {
+                spiralAngle += angleStep;
+
+                var x = (float) (center.X + spiralRadius * spiralAngle * Math.Cos(spiralAngle));
+                var y = (float) (center.Y + spiralRadius * spiralAngle * Math.Sin(spiralAngle));
+
+                yield return new PointF(x, y);
+            }
         }
 
-        public PointF GetPoint()
-        {
-            spiralAngle += angleStep;
-            
-            var x = (float) (center.X + spiralRadius * spiralAngle * Math.Cos(spiralAngle));
-            var y = (float) (center.Y + spiralRadius * spiralAngle * Math.Sin(spiralAngle));
-
-            return new PointF(x, y);
-        }
     }
 }

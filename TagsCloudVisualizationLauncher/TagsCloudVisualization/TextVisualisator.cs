@@ -18,21 +18,25 @@ namespace TagsCloudVisualization
             textImages = new List<TextImage>();
         }
 
-        public ITextVisualisator CreateTextImages(Dictionary<string, double> weights)
+        public Result<ITextVisualisator> CreateTextImages(Dictionary<string, double> weights)
         {
-            this.weights = weights;
-            textImages = new List<TextImage>();
+            var textImages = new TextImage[weights.Count];
+            var i = 0;
             foreach (var weight in weights)
             {
-                textImages.Add(new TextImage(weight.Key));
+                textImages[i] = new TextImage(weight.Key);
             }
-            return this;
+            return Result.Ok((ITextVisualisator)this);
         }
 
 
-        public ITextVisualisator SetFontSizes(double minFont, double maxFont)
+        public Result<ITextVisualisator> SetFontSizes(double minFont, double maxFont)
         {
-            if (weights.Count == 0) return this;
+            if (weights.Count == 0)
+                return Result.Fail<ITextVisualisator>("There was no words.");
+
+            if (minFont <= 0 || maxFont <= 0)
+                return Result.Fail<ITextVisualisator>("Font size can't be less then zero");
 
             var maxWeight = weights.Values.Max();
             var minWeight = weights.Values.Min();
@@ -44,29 +48,34 @@ namespace TagsCloudVisualization
                     : minFont;
                 textImage.FontSize = (float) fontSize;
             }
-            return this;
+            return Result.Ok((ITextVisualisator) this);
         }
 
-        public ITextVisualisator SetFontTipe(string fontType = "Arial")
+
+        public Result<ITextVisualisator> SetFontTipe(string fontType = "Arial")
         {
             foreach (var textImage in textImages)
             {
-                textImage.FontType = fontType;
+                var result = Result.Of(() => 
+                        textImage.Font = new Font(fontType, textImage.FontSize, textImage.Style));
+
+                if (!result.IsSuccess)
+                    return Result.Fail<ITextVisualisator>("Can't set this font!");
             }
-            return this;
+            return Result.Ok((ITextVisualisator)this);
         }
         
-        public ITextVisualisator SetColors()
+        public Result<ITextVisualisator> SetColors()
         {
             for (var i = 0; i < textImages.Count; i++)
             {
                 textImages[i].Color = colors[i % colors.Length];
             }
-            return this;
+            return Result.Ok((ITextVisualisator) this);
         }
 
 
-        public List<TextImage> GetStringImages()
+        public Result<TextImage[]> GetStringImages()
         {
             var proposedSize = new Size(int.MaxValue, int.MaxValue);
             var flags = TextFormatFlags.NoPadding;
@@ -76,7 +85,7 @@ namespace TagsCloudVisualization
                     textImage.Font, proposedSize, flags);
                 textImage.Size = size;
             }
-            return textImages;
+            return Result.Ok(textImages.ToArray());
         }
     }
 }

@@ -1,67 +1,98 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using YandexMystem.Wrapper.Enums;
 
 namespace TagsCloudVisualization
 {
-    public class CloudPainter : ICloudPainter
+    public class CloudPainter
     {
-        private readonly ICloudLayouter cloudLayouter;
         private readonly IAnalysator lexicAnalysator;
         private readonly ITextVisualisator textVisualisator;
-        private readonly IWordExtractor wordExtractor;
-        private readonly IFormatter formatter;
-        private readonly IFilter filter;
-        private readonly ITextCleaner textCleaner;
+        private readonly Func<string, Result<Word[]>> extractWords;
+        private readonly Func<string, string> removeSigns;
+        private readonly Func<Word, bool> isNecessaryPartOfSpeech;
+        private readonly Func<Word, string> formatWord;
+        private readonly Func<IEnumerable<Size>, IEnumerable<Rectangle>> putRectangles;
 
         public CloudPainter(
-            IWordExtractor wordExtractor,
-            IFormatter formatter,
-            IFilter filter,
+            Func<string, Result<Word[]>> extractWords,
+            Func<Word, bool> isNecessaryPartOfSpeech,
+            Func<Word, string> formatWord,
             IAnalysator lexicAnalysator,
-            ICloudLayouter cloudLayouter,
             ITextVisualisator textVisualisator,
-            ITextCleaner textCleaner
+            Func<IEnumerable<Size>, IEnumerable<Rectangle>> putRectangles,
+            Func<string, string> removeSigns
             )
         {
-            this.cloudLayouter = cloudLayouter;
+            this.extractWords = extractWords;
             this.lexicAnalysator = lexicAnalysator;
             this.textVisualisator = textVisualisator;
-            this.wordExtractor = wordExtractor;
-            this.formatter = formatter;
-            this.filter = filter;
-            this.textCleaner = textCleaner;
+            this.removeSigns = removeSigns;
+            this.isNecessaryPartOfSpeech = isNecessaryPartOfSpeech;
+            this.formatWord = formatWord;
+            this.putRectangles = putRectangles;
         }
 
-        private IEnumerable<TextImage> GetStringImages(
+
+        private Result<string[]> GetWords(string text)
+        {
+            var textWithoutSigns = removeSigns(text);
+
+            var extractWordsResult = extractWords(textWithoutSigns)
+                .Then(wordsArray => wordsArray.Where(isNecessaryPartOfSpeech))
+                .Then(filteredWords => filteredWords.Select(formatWord).ToArray());
+            
+            return extractWordsResult;
+        }
+
+
+        private Result<TextImage[]> GetStringImages(
             string text, 
             double minFont = 1.0, 
             double maxFont = 10.0, 
             string fontName = "Arial"
             )
         {
-            var textWithoutSigns = textCleaner.RemoveSigns(text);
+            var wordsResult = GetWords(text);
+            if (!wordsResult.IsSuccess)
+                return new Result<TextImage[]>(wordsResult.Error);
 
-            var words = wordExtractor
-                .ExtractWords(textWithoutSigns)
-                .Where(filter.IsNecessaryPartOfSpeech)
-                .Select(formatter.GetOriginal)
-                .ToArray();
+            var weights = lexicAnalysator.GetWeights(wordsResult.Value);
 
-            var weights = lexicAnalysator.GetWeights(words);
-            
-            var stringImages = textVisualisator
+            return textVisualisator
                 .CreateTextImages(weights)
-                .SetFontSizes(minFont, maxFont)
-                .SetColors()
-                .SetFontTipe(fontName)
-                .GetStringImages();
-
-            return stringImages;
+                .Then((visualisator) => visualisator.SetFontSizes(minFont, maxFont))
+                .Then((visualisator) => visualisator.SetColors())
+                .Then((visualisator) => visualisator.SetFontTipe(fontName))
+                .Then((visualisator) => visualisator.GetStringImages());
         }
-        
-        public Bitmap GetBitmap(
+
+        private bool RectanglesInBitmap(Bitmap bitmap, IEnumerable<Rectangle> rectangles)
+        {
+            var sortedByXPoints = rectangles
+                .Select(rectangle => rectangle.Location)
+                .OrderBy(location => location.X);
+
+            var mostLeftPoint = sortedByXPoints.First();
+            var mostRightPoint = sortedByXPoints.Last();
+
+            var sortedByYPoints = rectangles
+                .Select(rectangle => rectangle.Location)
+                .OrderBy(location => location.Y);
+
+            var mostTopPoint = sortedByYPoints.Last();
+            var mostBottomPoint = sortedByYPoints.First();
+
+            return mostLeftPoint.X > 0
+                   && mostRightPoint.X < bitmap.Width
+                   && mostTopPoint.Y < bitmap.Height
+                   && mostBottomPoint.Y > 0;
+        }
+
+        public Result<Bitmap> GetBitmap(
             string text, 
             int width = 100,
             int height = 100,
@@ -72,14 +103,29 @@ namespace TagsCloudVisualization
         {
             var bitmap = new Bitmap(width, height);
             var graphics = Graphics.FromImage(bitmap);
-            var textImages = GetStringImages(text, minFont, maxFont, fontName);
-            textImages = textImages
-                .OrderBy(stringImage => -stringImage.Size.Width * stringImage.Size.Height);
+            var textImagesResult = GetStringImages(text, minFont, maxFont, fontName);
+
+            if (!textImagesResult.IsSuccess)
+                return Result.Fail<Bitmap>(textImagesResult.Error);
+
+            var textImages = textImagesResult.Value
+                .OrderBy(stringImage => - stringImage.Size.Width * stringImage.Size.Height);
              
             var flags = TextFormatFlags.NoPadding | TextFormatFlags.NoClipping;
+
+            var rectangles = putRectangles(textImages.Select(textImage => textImage.Size));
+
+            
+            if (!RectanglesInBitmap(bitmap, rectangles))
+                return Result.Fail<Bitmap>("Too little bitmap for words");
+
+            var rectangleEnumerator = rectangles.GetEnumerator();
+            
             foreach (var textImage in textImages)
             {
-                var rectangle = cloudLayouter.PutNextRectangle(textImage.Size);
+                rectangleEnumerator.MoveNext();
+                var rectangle = rectangleEnumerator.Current;
+
                 TextRenderer.DrawText(
                     graphics, 
                     textImage.Text, 

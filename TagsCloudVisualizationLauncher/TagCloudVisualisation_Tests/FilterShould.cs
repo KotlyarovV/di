@@ -23,7 +23,7 @@ namespace TagCloudVisualisation_Tests
         [SetUp]
         public void SetUp()
         {
-            filter = new Filter(excludedGramPart);
+            filter = new Filter();
         }
 
         [TestCaseSource(typeof(DataClass), nameof(DataClass.DefineNotNeededGramParts))]
@@ -31,7 +31,7 @@ namespace TagCloudVisualisation_Tests
         [TestCaseSource(typeof(DataClass), nameof(DataClass.ExcludeUnmeaning))]
         public bool FilterWordsTest(Word word)
         {
-            return filter.IsNecessaryPartOfSpeech(word);
+            return filter.IsNecessaryPartOfSpeech(excludedGramPart, word);
         }
 
         private class DataClass

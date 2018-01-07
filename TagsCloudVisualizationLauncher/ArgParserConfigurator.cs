@@ -5,7 +5,7 @@ namespace TagsCloudVisualizationLauncher
 {
     static class ArgParserConfigurator
     {
-        //Tagscloudvisualization.exe --wh 3000 --ht 3000 --filename battle.txt --fontmin 20 --fontmax 50 --imagename cloud.png
+        //Tagscloudvisualization.exe --wh 3000 --ht 3000 --filename text.txt --fontmin 20 --fontmax 50 --imagename cloud.png
         public static void ArgParserConfigurate(IFluentCommandLineParser<Parameters> parser)
         {
             parser.Setup(arg => arg.FileName)
@@ -39,7 +39,6 @@ namespace TagsCloudVisualizationLauncher
 
             parser.SetupHelp("?", "help")
                 .Callback((help) => Console.WriteLine());
-
         }
     }
 }
