@@ -53,11 +53,17 @@ namespace TagsCloudVisualizationLauncher
             GetParameters();
             var cloudBuilder = new CloudBuilder();
             var bitmapResult = cloudBuilder.TryBuildCloud(parameters);
-            
-            Hide();
-            var form1 = new Form1(bitmapResult.GetValueOrThrow());
-            form1.Closed += (s, args) => Close();
-            form1.Show();
+            if (!bitmapResult.IsSuccess)
+            {
+                errorMessage.Text = bitmapResult.Error;
+            }
+            else
+            {
+                Hide();
+                var form1 = new Form1(bitmapResult.GetValueOrThrow());
+                form1.Closed += (s, args) => Close();
+                form1.Show();
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -86,6 +92,16 @@ namespace TagsCloudVisualizationLauncher
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label7_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label8_Click(object sender, EventArgs e)
         {
 
         }
