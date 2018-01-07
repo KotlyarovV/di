@@ -88,20 +88,14 @@ namespace TagsCloudVisualizationLauncher
 
         private void button1_Click(object sender, EventArgs e)
         {
-            var parametersResult = GetParametersResult(Regim.Save);
-            
-            if (!parametersResult.IsSuccess)
-            {
-                errorMessage.Text = parametersResult.Error;
-                return;
-            }
+            var parametersResult = GetParametersResult(Regim.Save);            
 
             var cloudBuilder = new CloudBuilder();
-            var bitmapResult = cloudBuilder.TryBuildCloud(parameters);
+            var bitmapResult = cloudBuilder.TryBuildCloud(parametersResult);
             
             var outPuter = new ImageOutputer();
             var saveResult = outPuter.SaveImage(
-                parameters,
+                parametersResult,
                 bitmapResult.GetValueOrThrow()
             );
 

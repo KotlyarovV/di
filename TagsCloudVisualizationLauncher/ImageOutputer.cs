@@ -6,11 +6,18 @@ namespace TagsCloudVisualizationLauncher
 {
     class ImageOutputer
     {
-        public Result<None> SaveImage(Parameters parameters, Result<Bitmap> bitmapResult)
+        public Result<None> SaveImage(
+            Result<Parameters> parametersResult, 
+            Result<Bitmap> bitmapResult
+            )
         {
+            if(!parametersResult.IsSuccess)
+                return Result.Fail<None>(parametersResult.Error);
+
             if (!bitmapResult.IsSuccess)
                 return Result.Fail<None>(bitmapResult.Error);
 
+            var parameters = parametersResult.GetValueOrThrow();
             FileStream outStream = null;
 
             var outStreamCreationResult = Result.Of(() => 

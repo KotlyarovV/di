@@ -19,7 +19,7 @@ namespace TagsCloudVisualizationLauncher
                 Application.Run(new ParametersForm());
             }            
             else
-            {
+            {                
                 if (args.Length == 2 && args[0] == "--conf")
                 {
                     var fileReader = new FileReader();
@@ -40,7 +40,7 @@ namespace TagsCloudVisualizationLauncher
 
                 var outPuter = new ImageOutputer();
                 var saveResult = outPuter.SaveImage(
-                        paramsResult.GetValueOrThrow(), 
+                        paramsResult, 
                         bitmapResult
                         );
 
