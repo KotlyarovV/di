@@ -1,6 +1,4 @@
 ﻿using System.Collections;
-using System.Linq;
-using FluentAssertions;
 using NUnit.Framework;
 using TagsCloudVisualization;
 using YandexMystem.Wrapper.Enums;

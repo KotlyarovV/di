@@ -38,16 +38,10 @@ namespace TagsCloudVisualizationLauncher
                 var cloudBuilder = new CloudBuilder();
                 var bitmapResult = cloudBuilder.TryBuildCloud(paramsResult);
 
-                if (!bitmapResult.IsSuccess)
-                {                   
-                   Console.WriteLine(bitmapResult.Error);
-                   return;                   
-                }
-
                 var outPuter = new ImageOutputer();
                 var saveResult = outPuter.SaveImage(
                         paramsResult.GetValueOrThrow(), 
-                        bitmapResult.GetValueOrThrow()
+                        bitmapResult
                         );
 
                 if (!saveResult.IsSuccess)

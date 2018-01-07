@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
-using Autofac;
 using TagsCloudVisualization;
 using TagsCloudVisualization.Extensions;
-using YandexMystem.Wrapper;
 using YandexMystem.Wrapper.Enums;
 
 namespace TagsCloudVisualizationLauncher

@@ -50,7 +50,7 @@ namespace TagCloudVisualisation_Tests
                 var sumXYSquares = Math.Pow(spiralPoint.X, 2) + Math.Pow(spiralPoint.Y, 2);
                 var radiusAndAngleSquare = Math.Pow(spiralAngle * spiralRadius, 2);
 
-                Math.Abs(sumXYSquares - radiusAndAngleSquare).Should().BeLessThan(0.00001);
+                Math.Abs(sumXYSquares - radiusAndAngleSquare).Should().BeLessThan(0.0001);
                 spiralPointsEnumerator.MoveNext();
             }
             spiralPointsEnumerator.Dispose();

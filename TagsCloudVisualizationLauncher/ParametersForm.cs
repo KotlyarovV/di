@@ -1,9 +1,5 @@
 ﻿using System;
-using System.IO;
-using System.Text;
 using System.Windows.Forms;
-using Autofac;
-using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationLauncher
 {
@@ -72,18 +68,18 @@ namespace TagsCloudVisualizationLauncher
             
             var cloudBuilder = new CloudBuilder();
             var bitmapResult = cloudBuilder.TryBuildCloud(parameters);
-
-            if (!bitmapResult.IsSuccess)
-            {
-                Console.WriteLine(bitmapResult.Error);
-                return;
-            }
-
+            
             var outPuter = new ImageOutputer();
             var saveResult = outPuter.SaveImage(
                 parameters,
                 bitmapResult.GetValueOrThrow()
-            );            
+            );
+
+            if (!saveResult.IsSuccess)
+            {
+                errorMessage.Text = bitmapResult.Error;
+            }
+            else errorMessage.Text = "";
         }
 
         private void label6_Click(object sender, EventArgs e)
