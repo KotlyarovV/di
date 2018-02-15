@@ -14,10 +14,12 @@ namespace TagsCloudVisualizationLauncher
     public partial class ParametersForm : Form
     {
         private readonly Parameters parameters;
+        private readonly CloudBuilder cloudBuilder;
         public ParametersForm()
         {
             InitializeComponent();
             parameters = new Parameters();
+            cloudBuilder = new CloudBuilder();
         }
 
         private void ParametersForm_Load(object sender, EventArgs e)
@@ -55,24 +57,28 @@ namespace TagsCloudVisualizationLauncher
                 .Then(x => parameters.FontSizeMin = double.Parse(minfontsize.Text))
                 .ReplaceError((str) => "Digits parameters was written incorrect!");
             
-            return new Result<Parameters>(digitParseResult.Error, parameters);
-            
-            
+            return new Result<Parameters>(digitParseResult.Error, parameters);           
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private bool CheckParameters(Regim regim)
         {
-            
-            var parametersResult = GetParametersResult(Regim.Show);
+            var parametersResult = GetParametersResult(regim);
 
             if (!parametersResult.IsSuccess)
             {
                 errorMessage.Text = parametersResult.Error;
-                return;
+                return false;
             }
 
-            var cloudBuilder = new CloudBuilder();
+            return true;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (!CheckParameters(Regim.Show)) return;            
+
             var bitmapResult = cloudBuilder.TryBuildCloud(parameters);
+
             if (!bitmapResult.IsSuccess)
             {
                 errorMessage.Text = bitmapResult.Error;
@@ -88,14 +94,12 @@ namespace TagsCloudVisualizationLauncher
 
         private void button1_Click(object sender, EventArgs e)
         {
-            var parametersResult = GetParametersResult(Regim.Save);            
-
-            var cloudBuilder = new CloudBuilder();
-            var bitmapResult = cloudBuilder.TryBuildCloud(parametersResult);
+            if (!CheckParameters(Regim.Save)) return;
+            var bitmapResult = cloudBuilder.TryBuildCloud(parameters);
             
             var outPuter = new ImageOutputer();
             var saveResult = outPuter.SaveImage(
-                parametersResult,
+                parameters,
                 bitmapResult.GetValueOrThrow()
             );
 

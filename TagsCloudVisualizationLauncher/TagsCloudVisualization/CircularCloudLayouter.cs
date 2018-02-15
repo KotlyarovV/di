@@ -9,7 +9,7 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter
     {      
         private Point BalancePoint(PointF point) =>
-            new Point((int)Math.Floor(point.X), (int)Math.Ceiling(point.Y));
+            new Point((int) Math.Floor(point.X), (int) Math.Ceiling(point.Y));
 
         public IEnumerable<Rectangle> GetCloudRectangles(
             IEnumerable<Size> sizes,

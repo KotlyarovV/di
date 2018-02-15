@@ -6,7 +6,7 @@ namespace TagsCloudVisualization
     {
         Result<ITextVisualisator> SetFontSizes(double minFont, double maxFont);
         Result<ITextVisualisator> CreateTextImages(Dictionary<string, double> weights);
-        Result<ITextVisualisator> SetFontTipe(string fontType);
+        Result<ITextVisualisator> SetFontType(string fontType);
         Result<ITextVisualisator> SetColors();
         Result<TextImage[]> GetStringImages();
     }

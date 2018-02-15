@@ -1,11 +1,40 @@
-﻿using System;
+﻿using Autofac;
+using System;
+using System.Drawing;
 using System.Windows.Forms;
-
+using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationLauncher
 {
     static class Program
     {
+
+        private static Result<string[]> GetArgsFromFile(string fileName)
+        {
+            var fileReader = new FileReader();
+            var configResult = fileReader.GetText(fileName);
+
+            return (configResult.IsSuccess) ? 
+                Result.Ok(configResult.GetValueOrThrow().Split()) : 
+                Result.Fail<string[]>(configResult.Error);
+
+        }
+
+        private static Result<None> SaveCloud(string[] args)
+        {
+            var parametersReader = new ParametersReader();
+            var paramsResult = parametersReader.ParseParameters(args);
+
+            var cloudBuilder = new CloudBuilder();
+            var bitmapResult = cloudBuilder.TryBuildCloud(paramsResult);
+
+            var outPuter = new ImageOutputer();
+            return outPuter.SaveImage(
+                    paramsResult,
+                    bitmapResult
+                    );
+        }
+
         /// <summary>
         /// Главная точка входа для приложения.
         /// </summary>
@@ -22,28 +51,15 @@ namespace TagsCloudVisualizationLauncher
             {                
                 if (args.Length == 2 && args[0] == "--conf")
                 {
-                    var fileReader = new FileReader();
-                    var configResult = fileReader.GetText(args[1]);
-                    if (!configResult.IsSuccess)
+                    var argsResult = GetArgsFromFile(args[1]);                    
+                    if (!argsResult.IsSuccess)
                     {
-                        Console.WriteLine(configResult.Error);
+                        Console.WriteLine(argsResult.Error);
                         return;
                     }
-                    args = configResult.GetValueOrThrow().Split();
                 }
 
-                var parametersReader = new ParametersReader();
-                var paramsResult = parametersReader.ParseParameters(args);
-                
-                var cloudBuilder = new CloudBuilder();
-                var bitmapResult = cloudBuilder.TryBuildCloud(paramsResult);
-
-                var outPuter = new ImageOutputer();
-                var saveResult = outPuter.SaveImage(
-                        paramsResult, 
-                        bitmapResult
-                        );
-
+                var saveResult = SaveCloud(args);
                 if (!saveResult.IsSuccess)
                 {
                     Console.WriteLine(saveResult.Error);

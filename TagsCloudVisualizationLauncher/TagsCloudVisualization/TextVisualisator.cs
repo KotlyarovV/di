@@ -29,7 +29,6 @@ namespace TagsCloudVisualization
             return Result.Ok((ITextVisualisator) this);
         }
 
-
         public Result<ITextVisualisator> SetFontSizes(double minFont, double maxFont)
         {
             if (textImages.Length == 0)
@@ -52,7 +51,7 @@ namespace TagsCloudVisualization
         }
 
 
-        public Result<ITextVisualisator> SetFontTipe(string fontType = "Arial")
+        public Result<ITextVisualisator> SetFontType(string fontType = "Arial")
         {
             foreach (var textImage in textImages)
             {

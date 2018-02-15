@@ -61,7 +61,7 @@ namespace TagCloudVisualisation_Tests
         {
             textVisualisator.CreateTextImages(weights);
             textVisualisator.SetFontSizes(10, 20);
-            textVisualisator.SetFontTipe("Times New Roman");
+            textVisualisator.SetFontType("Times New Roman");
 
             textVisualisator
                 .GetStringImages()

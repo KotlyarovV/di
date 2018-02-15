@@ -5,13 +5,24 @@ namespace TagsCloudVisualizationLauncher
 {
     internal class CloudBuilder
     {
+        public Result<None> CheckParameters(Parameters parameters)
+        {
+            if (parameters.Width <= 0 || parameters.Height <= 0)
+                return Result.Fail<None>("Sizes must be more then zero!");
+
+            if (parameters.FontSizeMax <= 0 || parameters.FontSizeMin <= 0
+                || parameters.FontSizeMin > parameters.FontSizeMax)
+                return Result.Fail<None>("Wrong sizes of font!");
+
+            return Result.Ok();
+        }
+
         public Result<Bitmap> TryBuildCloud(Result<Parameters> parametersResult)
         {
             if (!parametersResult.IsSuccess)
                 return Result.Fail<Bitmap>(parametersResult.Error);
 
             var parameters = parametersResult.GetValueOrThrow();
-
             var fileReader = new FileReader();
             var textResult = fileReader.GetText(parameters.FileName);
 
@@ -20,12 +31,8 @@ namespace TagsCloudVisualizationLauncher
 
             var cloudPainter = CloudConfigurator.ConfigureCloud(parameters);
 
-            if (parameters.Width <= 0 || parameters.Height <= 0)
-                return Result.Fail<Bitmap>("Sizes must be more then zero!");
-
-            if (parameters.FontSizeMax <= 0 || parameters.FontSizeMin <= 0 
-                || parameters.FontSizeMin > parameters.FontSizeMax)
-                return Result.Fail<Bitmap>("Wrong sizes of font!");
+            if (!CheckParameters(parameters).IsSuccess)
+                return Result.Fail<Bitmap>(CheckParameters(parameters).Error);
 
             return cloudPainter.GetBitmap(
                 textResult.GetValueOrThrow(),

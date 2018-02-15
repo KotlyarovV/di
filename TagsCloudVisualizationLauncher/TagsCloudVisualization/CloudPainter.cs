@@ -64,10 +64,10 @@ namespace TagsCloudVisualization
 
             return textVisualisator
                 .CreateTextImages(weights)
-                .Then((visualisator) => visualisator.SetFontSizes(minFont, maxFont))
-                .Then((visualisator) => visualisator.SetColors())
-                .Then((visualisator) => visualisator.SetFontTipe(fontName))
-                .Then((visualisator) => visualisator.GetStringImages());
+                .Then(visualisator => visualisator.SetFontSizes(minFont, maxFont))
+                .Then(visualisator => visualisator.SetColors())
+                .Then(visualisator => visualisator.SetFontType(fontName))
+                .Then(visualisator => visualisator.GetStringImages());
         }
 
         private bool RectanglesInBitmap(Bitmap bitmap, IEnumerable<Rectangle> rectangles)
@@ -92,6 +92,9 @@ namespace TagsCloudVisualization
                    && mostBottomPoint.Y > 0;
         }
 
+        
+
+        private Result<IEnumerable<Tuple<>>>
         public Result<Bitmap> GetBitmap(
             string text, 
             int width = 100,
@@ -112,9 +115,8 @@ namespace TagsCloudVisualization
                 .OrderBy(stringImage => - stringImage.Size.Width * stringImage.Size.Height);
              
             var flags = TextFormatFlags.NoPadding | TextFormatFlags.NoClipping;
-
+            
             var rectangles = putRectangles(textImages.Select(textImage => textImage.Size));
-
             
             if (!RectanglesInBitmap(bitmap, rectangles))
                 return Result.Fail<Bitmap>("Too little bitmap for words");
